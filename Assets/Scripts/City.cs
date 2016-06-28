@@ -7,6 +7,11 @@ public class City : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+		//has to be remade when there are more dungeons.
+		EnterTestDungeon ();
+	}
+
+	void EnterTestDungeon(){
 		Debug.Log ("started a new dungeon");
 		testDungeon = new Dungeon (0,5,1);
 	}
