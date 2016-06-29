@@ -14,7 +14,7 @@ public class Enemy {
 	//Its attack power.
 	int AP;
 	//Its active abilities
-	List<Skill> abilties;
+	List<Skill> abilties = new List<Skill>();
 
 	System.Random rnd = new System.Random();
 
@@ -30,7 +30,6 @@ public class Enemy {
 		level = newLevel;
 		health = level * 100;
 		AP = level + number;
-		abilties = new List<Skill>();
 		addAbilities();
 	}
 

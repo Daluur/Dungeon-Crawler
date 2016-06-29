@@ -14,7 +14,7 @@ public class Player : MonoBehaviour {
 	//Whether or not it is the players turn.
 	bool myTurn = false;
 	//Players active abilties
-	List<Skill> abilties;
+	List<Skill> abilties = new List<Skill>();
 
 	/// <summary>
 	/// Ínitialises data
@@ -22,7 +22,6 @@ public class Player : MonoBehaviour {
 	void Awake () {
 		health = 100 * level;
 		AP = 20 * level;
-		abilties = new List<Skill>();
 		addAbilities ();
 	}
 
