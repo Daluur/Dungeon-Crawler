@@ -10,7 +10,7 @@ public class Dungeon {
 	//Level you should be.
 	int level;
 	//which enemy out of the length is the current.
-	int atIndex = 0;
+	int atIndex = -1;
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref="Dungeon"/> class.

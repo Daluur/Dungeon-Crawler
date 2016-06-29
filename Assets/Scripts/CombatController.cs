@@ -36,7 +36,7 @@ public class CombatController : MonoBehaviour {
 	/// <param name="newE">New e.</param>
 	public void NewEnemy(Enemy newE){
 		currentEnemy = newE;
-		Debug.Log ("has an enemy");
+		Debug.Log ("A new Enemy as appeared");
 		player.MyTurn ();
 	}
 
@@ -52,6 +52,7 @@ public class CombatController : MonoBehaviour {
 			//Says it is the enemies turn.
 			currentEnemy.MyTurn ();
 		}
+
 	}
 
 	/// <summary>

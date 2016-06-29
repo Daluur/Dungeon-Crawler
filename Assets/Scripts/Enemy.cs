@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+using System;
 
 public class Enemy {
 
@@ -11,6 +13,11 @@ public class Enemy {
 	int health;
 	//Its attack power.
 	int AP;
+	//Its active abilities
+	List<Skill> abilties;
+
+	System.Random rnd = new System.Random();
+
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref="Enemy"/> class.
@@ -23,6 +30,8 @@ public class Enemy {
 		level = newLevel;
 		health = level * 100;
 		AP = level + number;
+		abilties = new List<Skill>();
+		addAbilities();
 	}
 
 	/// <summary>
@@ -44,8 +53,28 @@ public class Enemy {
 	/// My turn.
 	/// </summary>
 	public void MyTurn(){
-		//TODO: should have a simple AI for deciding what to do.
-		Debug.Log ("Enemy dealt damage!");
-		CombatController._instance.AttackPlayer (new DamagePackage (1, 10));
+		//TODO: Need simple AI to pick attacks.
+		Skill attack = abilties[rnd.Next(0,3)];
+
+		Debug.Log ("Enemy used " + attack.name + "!");
+		CombatController._instance.AttackPlayer (attack.CalDmg(AP));
+	}
+
+	/// <summary>
+	/// Decrement the CD for all Skills
+	/// </summary>
+	public void updateCD() {
+		foreach (Skill attack in abilties) {
+			attack.updateCD();
+		}
+	}
+
+	//Temporary solution, until we get another way to keep abilties.
+	private void addAbilities(){
+		abilties.Add (new Skill ("Swarm of Butterflies", 1, 1, 0));
+
+		abilties.Add (new Skill ("Elephant Stampede", 1, 2, 2));
+
+		abilties.Add (new Skill ("Flock of Cows", 1, 1, 1));
 	}
 }
