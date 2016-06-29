@@ -43,7 +43,6 @@ public class Enemy {
 		health -= dp.damage;
 		Debug.Log ("Enemy took: " + dp.damage + " damage");
 		if (health <= 0) {
-			Debug.Log ("Enemy is dead");
 			return true;
 		}
 		return false;
@@ -71,10 +70,10 @@ public class Enemy {
 
 	//Temporary solution, until we get another way to keep abilties.
 	private void addAbilities(){
-		abilties.Add (new Skill ("Swarm of Butterflies", 1, 1, 0));
+		abilties.Add (new Skill ("Swarm of Butterflies", 1, 10, 0));
 
-		abilties.Add (new Skill ("Elephant Stampede", 1, 2, 2));
+		abilties.Add (new Skill ("Elephant Stampede", 1, 20, 2));
 
-		abilties.Add (new Skill ("Flock of Cows", 1, 1, 1));
+		abilties.Add (new Skill ("Flock of Cows", 1, 10, 1));
 	}
 }

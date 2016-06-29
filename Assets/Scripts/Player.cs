@@ -36,7 +36,6 @@ public class Player : MonoBehaviour {
 		health -= dp.damage;
 		Debug.Log ("Player took: " + dp.damage + " damage");
 		if (health <= 0) {
-			Debug.Log ("Player is dead");
 			return true;
 		}
 		return false;
