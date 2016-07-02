@@ -52,11 +52,20 @@ public class CombatController : MonoBehaviour {
 			//Says it is the enemies turn.
 			currentEnemy.MyTurn ();
 		}
-
 	}
 
 	/// <summary>
-	/// Attacks the player.
+	/// Heals the Enemy
+	/// </summary>
+	/// <param name="hp">Hp.</param>
+	public void HealEnemy(HealingPackage hp){
+		currentEnemy.HealUp (hp);
+		//Says it is the players turn.
+		player.MyTurn ();
+	}
+
+	/// <summary>
+	/// Attacks the Player.
 	/// </summary>
 	/// <param name="dp">Dp.</param>
 	public void AttackPlayer(DamagePackage dp){
@@ -67,4 +76,15 @@ public class CombatController : MonoBehaviour {
 			player.MyTurn ();
 		}
 	}
+
+	/// <summary>
+	/// Heals the Player
+	/// </summary>
+	/// <param name="hp">Hp.</param>
+	public void HealPlayer(HealingPackage hp){
+		player.HealUp (hp);
+		//Says it is the enemies turn.
+		currentEnemy.MyTurn ();
+	}
+
 }

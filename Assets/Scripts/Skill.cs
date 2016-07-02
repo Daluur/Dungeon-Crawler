@@ -5,7 +5,9 @@ public class Skill{
 
 	//Skill name
 	public string name;
-	//SKill type
+	//Skill type, self target or enemy target.
+	bool selfTar;
+	//SKill elemental type
 	int type;
 	//Skill damage, as AP multiplier
 	int APMult;
@@ -18,11 +20,13 @@ public class Skill{
 	/// Creates a new Skill
 	/// </summary>
 	/// <param name="newName">New Name.</param>
+	/// <param name="newSelfTar">NEw Self Target.</param>
 	/// <param name="newType">New Type.</param>
 	/// <param name="newAPMult">New AP Multiplier.</param>
 	/// <param name="newCD">New Cooldown.</param>
-	public Skill(string newName, int newType, int newAPMult, int newCD){
+	public Skill(string newName, bool newSelfTar, int newType, int newAPMult, int newCD){
 		name = newName;
+		selfTar = newSelfTar;
 		type = newType;
 		APMult = newAPMult;
 		CD = newCD;
@@ -33,6 +37,17 @@ public class Skill{
 	/// </summary>
 	public DamagePackage CalDmg(int AP){
 		return new DamagePackage (type, AP * APMult);
+	}
+
+	/// <summary>
+	/// Calculates healing and creates HealingPackage.
+	/// </summary>
+	public HealingPackage CalHeal(int AP){
+		return new HealingPackage (type, AP * APMult);
+	}
+
+	public bool isSelfTarget(){
+		return selfTar;
 	}
 
 	/// <summary>

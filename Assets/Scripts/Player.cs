@@ -6,7 +6,7 @@ using System.Collections.Generic;
 public class Player : MonoBehaviour {
 
 	//Players level
-	int level = 1;
+	int level = 2;
 	//Players current health.
 	int health;
 	//Players current AP
@@ -41,18 +41,40 @@ public class Player : MonoBehaviour {
 	}
 
 	/// <summary>
-	/// Does the dmg.
+	/// Heals the Player
 	/// </summary>
-	public void DoDmg(Skill attack){
+	/// <param name="hp">Hp.</param>
+	public void HealUp(HealingPackage hp){
+		health += hp.healing;
+		Debug.Log ("Player recieved: " + hp.healing + " health");
+	}
+
+	/// <summary>
+	/// Uses an Ability.
+	/// </summary>
+	public void UseAbility(Skill ability){
 		if (myTurn) {
-			if (attack.onCD ()) {
-				Debug.Log (attack.name + " is on Cooldown");
-			} else {
-				myTurn = false;
-				Debug.Log ("Player used " + attack.name + "!");
-				CombatController._instance.AttackEnemy (attack.CalDmg (AP));
-				updateCD ();
-				attack.setCD ();
+			if (ability.isSelfTarget()) { // Healing
+				if (ability.onCD ()) {
+					Debug.Log (ability.name + " is on Cooldown");
+				} else {
+					myTurn = false;
+					Debug.Log ("Player used " + ability.name + "!");
+					CombatController._instance.HealPlayer (ability.CalHeal (AP));
+					updateCD ();
+					ability.setCD ();
+				}
+			}
+			else { // Damage
+				if (ability.onCD ()) {
+					Debug.Log (ability.name + " is on Cooldown");
+				} else {
+					myTurn = false;
+					Debug.Log ("Player used " + ability.name + "!");
+					CombatController._instance.AttackEnemy (ability.CalDmg (AP));
+					updateCD ();
+					ability.setCD ();
+				}
 			}
 		}
 	}
@@ -61,7 +83,7 @@ public class Player : MonoBehaviour {
 	/// Allows the player to perform his turn.
 	/// </summary>
 	public void MyTurn(){
-		Debug.Log ("Players turn!");
+		Debug.Log ("Players turn!"+health);
 		myTurn = true;
 	}
 
@@ -76,24 +98,24 @@ public class Player : MonoBehaviour {
 
 	// Temporary solution, because I was unable to get info from button's in canvas.
 	// But.. it's an easy way to make the attack buttons.
-	public void Attack1(){
-		DoDmg (abilties [0]);
+	public void attack1(){
+		UseAbility(abilties [0]);
 	}
 
-	public void Attack2(){
-		DoDmg (abilties [1]);
+	public void attack2(){
+		UseAbility(abilties [1]);
 	}
 
-	public void Attack3(){
-		DoDmg (abilties [2]);
+	public void attack3(){
+		UseAbility(abilties [2]);
 	}
 
 	// Temporary solution, until we get another way to keep abiltiies.
 	private void addAbilities(){
-		abilties.Add (new Skill ("Mega Punch", 1, 1, 0));
+		abilties.Add (new Skill ("Mega Punch", false, 1, 1, 0));
 
-		abilties.Add (new Skill ("Fireball", 3, 2, 1));
+		abilties.Add (new Skill ("Fireball", false, 3, 2, 1));
 
-		abilties.Add (new Skill (".38 Caliber", 1, 2, 2));
+		abilties.Add (new Skill ("Holy Hand", true, 1, 2, 2));
 	}
 }
