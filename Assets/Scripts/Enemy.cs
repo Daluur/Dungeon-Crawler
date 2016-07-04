@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+using System;
 
 public class Enemy {
 
@@ -11,6 +13,11 @@ public class Enemy {
 	int health;
 	//Its attack power.
 	int AP;
+	//Its active abilities
+	List<Skill> abilties = new List<Skill>();
+
+	System.Random rnd = new System.Random();
+
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref="Enemy"/> class.
@@ -22,7 +29,10 @@ public class Enemy {
 		type = newType;
 		level = newLevel;
 		health = level * 100;
+		//Instansiate healthbar with max hp.
+		VisualController._instance.CreateEnemyHealthbar (health);
 		AP = level + number;
+		addAbilities();
 	}
 
 	/// <summary>
@@ -32,20 +42,55 @@ public class Enemy {
 	/// <param name="dp">Dp.</param>
 	public bool TakeDamage(DamagePackage dp){
 		health -= dp.damage;
+		//Update Healthbar
+		VisualController._instance.UpdateEnemyHealthbar(health);
 		Debug.Log ("Enemy took: " + dp.damage + " damage");
 		if (health <= 0) {
-			Debug.Log ("Enemy is dead");
 			return true;
 		}
 		return false;
 	}
 
 	/// <summary>
+	/// Heals the Enemy
+	/// </summary>
+	/// <param name="hp">Hp.</param>
+	public void HealUp(HealingPackage hp){
+		health += hp.healing;
+		Debug.Log ("Enemy recieved: " + hp.healing + " health");
+	}
+
+	/// <summary>
 	/// My turn.
 	/// </summary>
 	public void MyTurn(){
-		//TODO: should have a simple AI for deciding what to do.
-		Debug.Log ("Enemy dealt damage!");
-		CombatController._instance.AttackPlayer (new DamagePackage (1, 10));
+		//TODO: Need simple AI to pick attacks.
+		Skill ability = abilties[rnd.Next(0,3)];
+
+		Debug.Log ("Enemy used " + ability.name + "!");
+		if (ability.isSelfTarget ()) {
+			CombatController._instance.HealEnemy (ability.CalHeal (AP));
+		}
+		else {
+			CombatController._instance.AttackPlayer (ability.CalDmg(AP));
+		}
+	}
+
+	/// <summary>
+	/// Decrement the CD for all Skills
+	/// </summary>
+	public void updateCD() {
+		foreach (Skill attack in abilties) {
+			attack.updateCD();
+		}
+	}
+
+	//Temporary solution, until we get another way to keep abilties.
+	private void addAbilities(){
+		abilties.Add (new Skill ("Swarm of Butterflies", false, 1, 10, 0));
+
+		abilties.Add (new Skill ("Elephant Stampede", false, 1, 20, 2));
+
+		abilties.Add (new Skill ("Flock of Cows", true, 1, 10, 0));
 	}
 }
