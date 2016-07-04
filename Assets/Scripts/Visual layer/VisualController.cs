@@ -103,7 +103,7 @@ public class VisualController : MonoBehaviour {
 
 	public void UpdatePlayerHealthbar(int currHealth){
 		//Updates the healthbar
-		playerHealthbar.value = (float)currHealth/enemyMaxHealth;
+		playerHealthbar.value = (float)currHealth/playerMaxHealth;
 		playerHealthbarColor.color = Color.Lerp (Color.red, Color.green, playerHealthbar.value);
 		playerHealthText.text = "" + currHealth + "/" + playerMaxHealth;
 	}
