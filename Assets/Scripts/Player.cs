@@ -10,6 +10,10 @@ public class Player : MonoBehaviour {
 	//Whether or not it is the players turn.
 	bool myTurn = false;
 
+	void Start(){
+		VisualController._instance.CreatePlayerHealthbar (health);
+	}
+
 	/// <summary>
 	/// Takes the damage.
 	/// </summary>
@@ -17,6 +21,8 @@ public class Player : MonoBehaviour {
 	/// <param name="dp">Dp.</param>
 	public bool TakeDamage(DamagePackage dp){
 		health -= dp.damage;
+		//Update Healthbar
+		VisualController._instance.UpdatePlayerHealthbar(health);
 		Debug.Log ("Player took: " + dp.damage + " damage");
 		if (health <= 0) {
 			Debug.Log ("Player is dead");
@@ -32,7 +38,7 @@ public class Player : MonoBehaviour {
 		if (myTurn) {
 			myTurn = false;
 			Debug.Log ("Player dealt damage!");
-			CombatController._instance.AttackEnemy (new DamagePackage (1, 25));
+			CombatController._instance.AttackEnemy (new DamagePackage (1, 50));
 		}
 	}
 

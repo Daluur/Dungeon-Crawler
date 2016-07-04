@@ -22,6 +22,8 @@ public class Enemy {
 		type = newType;
 		level = newLevel;
 		health = level * 100;
+		//Instansiate healthbar with max hp.
+		VisualController._instance.CreateEnemyHealthbar (health);
 		AP = level + number;
 	}
 
@@ -32,6 +34,8 @@ public class Enemy {
 	/// <param name="dp">Dp.</param>
 	public bool TakeDamage(DamagePackage dp){
 		health -= dp.damage;
+		//Update Healthbar
+		VisualController._instance.UpdateEnemyHealthbar(health);
 		Debug.Log ("Enemy took: " + dp.damage + " damage");
 		if (health <= 0) {
 			Debug.Log ("Enemy is dead");
