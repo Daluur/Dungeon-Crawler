@@ -48,7 +48,8 @@ public class CombatController : MonoBehaviour {
 		if (currentEnemy.TakeDamage (dp)) {
 			Debug.Log ("Enemey Died!");
 			VisualController._instance.RemoveEnemyVisual ();
-			currentDungeon.NextEncounter ();
+			//Shows the loot button.
+			VisualController._instance.ShowLootButton ();
 		} else {
 			//Says it is the enemies turn.
 			currentEnemy.MyTurn ();
@@ -88,4 +89,20 @@ public class CombatController : MonoBehaviour {
 		currentEnemy.MyTurn ();
 	}
 
+	/// <summary>
+	/// Starts the next encounter.
+	/// </summary>
+	public void NextEncounter(){
+		VisualController._instance.RemoveNextEncounterButton ();
+		currentDungeon.NextEncounter ();
+	}
+
+	/// <summary>
+	/// Gives loot to the player.
+	/// </summary>
+	public void DoLoot(){
+		VisualController._instance.RemoveLootButton ();
+		Debug.Log ("Player recieved some loot (NYI)");
+		VisualController._instance.ShowNextEncounterButton ();
+	}
 }

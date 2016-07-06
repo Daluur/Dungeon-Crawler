@@ -35,7 +35,7 @@ public class Dungeon {
 
 		//Tells the combat controller which dungeon we are in.
 		CombatController._instance.NewDungeon (this);
-		//Starts the next encounter.
+		//Starts the first encounter.
 		NextEncounter ();
 	}
 
@@ -46,6 +46,9 @@ public class Dungeon {
 		atIndex++;
 		if (atIndex == length) {
 			Debug.Log ("Dungeon is finished");
+			Debug.Log ("Should give end-of-dungeon loot now!");
+			//Leaves the dungeon.
+			GameStateManager._instance.LeaveDungeon ();
 			return;
 		}
 		//Creates a new enemy

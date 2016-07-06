@@ -30,6 +30,12 @@ public class VisualController : MonoBehaviour {
 	//The background.
 	public SpriteRenderer background;
 
+	public GameObject combatCanvas;
+	public GameObject townCanvas;
+
+	public GameObject lootButton;
+	public GameObject nextEncounterButton;
+
 	/// <summary>
 	/// Makes it a singleton.
 	/// </summary>
@@ -111,5 +117,37 @@ public class VisualController : MonoBehaviour {
 	public void ChangebackgroundColor(Color col){
 		//Changes the background color.
 		background.color = col;
+	}
+
+	public void ShowLootButton(){
+		lootButton.SetActive (true);
+	}
+
+	public void RemoveLootButton(){
+		lootButton.SetActive (false);
+	}
+
+	public void ShowNextEncounterButton(){
+		nextEncounterButton.SetActive (true);
+	}
+
+	public void RemoveNextEncounterButton(){
+		nextEncounterButton.SetActive (false);
+	}
+
+	public void LeaveDungeon(){
+		combatCanvas.SetActive (false);
+	}
+
+	public void EnterDungeon(){
+		combatCanvas.SetActive (true);
+	}
+
+	public void LeaveTown(){
+		townCanvas.SetActive (false);
+	}
+
+	public void EnterTown(){
+		townCanvas.SetActive (true);
 	}
 }
