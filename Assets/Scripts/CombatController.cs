@@ -47,6 +47,7 @@ public class CombatController : MonoBehaviour {
 	public void AttackEnemy(DamagePackage dp){
 		if (currentEnemy.TakeDamage (dp)) {
 			Debug.Log ("Enemey Died!");
+			VisualController._instance.RemoveEnemyVisual ();
 			currentDungeon.NextEncounter ();
 		} else {
 			//Says it is the enemies turn.

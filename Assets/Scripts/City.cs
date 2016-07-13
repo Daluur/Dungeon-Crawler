@@ -13,6 +13,6 @@ public class City : MonoBehaviour {
 
 	void EnterTestDungeon(){
 		Debug.Log ("started a new dungeon");
-		testDungeon = new Dungeon (0,5,1);
+		testDungeon = new Dungeon (1,5,1);
 	}
 }

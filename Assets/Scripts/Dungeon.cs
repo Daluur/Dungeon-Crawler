@@ -3,8 +3,8 @@ using System.Collections;
 
 public class Dungeon {
 
-	//Which type, e.g. fire, water, desert w/e
-	int type;
+	//Which type, e.g. Dungeon, cave, forest w/e
+	int dungeonType;
 	//How many enemies.
 	int length;
 	//Level you should be.
@@ -19,10 +19,23 @@ public class Dungeon {
 	/// <param name="newLengh">New lengh.</param>
 	/// <param name="newLevel">New level.</param>
 	public Dungeon(int newType, int newLengh, int newLevel){
-		type = newType;
+		dungeonType = newType;
 		length = newLengh;
 		level = newLevel;
+		//Changes the background color based on which dungeon type it is.
+		if (dungeonType == 0) {
+			VisualController._instance.ChangebackgroundColor (Color.green);
+		}
+		else if (dungeonType == 1) {
+			VisualController._instance.ChangebackgroundColor (Color.gray);
+		}
+		else if (dungeonType == 2) {
+			VisualController._instance.ChangebackgroundColor (Color.black);
+		}
+
+		//Tells the combat controller which dungeon we are in.
 		CombatController._instance.NewDungeon (this);
+		//Starts the next encounter.
 		NextEncounter ();
 	}
 
@@ -36,9 +49,15 @@ public class Dungeon {
 			return;
 		}
 		//Creates a new enemy
-		//TODO: get the enemy from some sort of database.
 		Debug.Log ("Created new enemy, enemy number: "+atIndex);
-		CombatController._instance.NewEnemy (new Enemy (type, level, atIndex));
-		//Create the mob visually.
+		EnemyInfo temp = EnemyDatabase._instance.CreateEnemyOfType (dungeonType, level);
+		if (temp == null) {
+			Debug.LogError ("Something bad happened! returned null from enemy spawn!");
+			return;
+		}
+		//Creates the enemy visual.
+		VisualController._instance.CreateEnemyVisual (temp);
+		//Creates the actual enemy.
+		CombatController._instance.NewEnemy (new Enemy (temp.type, level, atIndex));
 	}
 }

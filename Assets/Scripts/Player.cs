@@ -19,12 +19,12 @@ public class Player : MonoBehaviour {
 	/// <summary>
 	/// Ínitialises data
 	/// </summary>
-	void Awake () {
+	void Start () {
 		health = 100 * level;
 		AP = 20 * level;
 		addAbilities ();
+		VisualController._instance.CreatePlayerHealthbar (health);
 	}
-
 
 	/// <summary>
 	/// Takes the damage.
@@ -34,6 +34,8 @@ public class Player : MonoBehaviour {
 	public bool TakeDamage(DamagePackage dp){
 		health -= dp.damage;
 		Debug.Log ("Player took: " + dp.damage + " damage");
+		//Updates the healthbar
+		VisualController._instance.UpdatePlayerHealthbar (health);
 		if (health <= 0) {
 			return true;
 		}
@@ -46,6 +48,8 @@ public class Player : MonoBehaviour {
 	/// <param name="hp">Hp.</param>
 	public void HealUp(HealingPackage hp){
 		health += hp.healing;
+		//Updates the healthbar
+		VisualController._instance.UpdatePlayerHealthbar (health);
 		Debug.Log ("Player recieved: " + hp.healing + " health");
 	}
 
