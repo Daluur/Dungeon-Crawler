@@ -15,6 +15,8 @@ public class Enemy {
 	int AP;
 	//Its active abilities
 	List<Skill> abilties = new List<Skill>();
+	List<DamagePackage> DoTS = new List<DamagePackage>();
+	List<DamagePackage> HoTS = new List<DamagePackage>();
 
 	System.Random rnd = new System.Random();
 
@@ -28,7 +30,7 @@ public class Enemy {
 	public Enemy(int newType, int newLevel, int number){
 		type = newType;
 		level = newLevel;
-		health = level * 100;
+		health = level * 1000;
 		//Instansiate healthbar with max hp.
 		VisualController._instance.CreateEnemyHealthbar (health);
 		AP = level + number;
@@ -51,25 +53,73 @@ public class Enemy {
 		return false;
 	}
 
+	public bool TakeDoTDamage(){
+		List<DamagePackage> toRemove = new List<DamagePackage> ();
+		foreach (DamagePackage DoT in DoTS) {
+			if (DoT.rounds > 0) {
+				health -= DoT.damage;
+				//Update Healthbar
+				VisualController._instance.UpdateEnemyHealthbar (health);
+				Debug.Log ("Enemy took: " + DoT.OTDamage + " damage, from DoT");
+				DoT.updateTimeLeft();
+			} else {
+				toRemove.Add (DoT);
+			}
+		}
+		foreach (DamagePackage DoT in toRemove) {
+			DoTS.Remove (DoT);
+		}
+		if (health <= 0) {
+			return true;
+		}
+		return false;
+	}
+
 	/// <summary>
 	/// Heals the Enemy
 	/// </summary>
 	/// <param name="hp">Hp.</param>
-	public void HealUp(HealingPackage hp){
-		health += hp.healing;
-		Debug.Log ("Enemy recieved: " + hp.healing + " health");
+	public void HealUp(DamagePackage hp){
+		health += hp.damage;
+		//Update Healthbar
+		VisualController._instance.UpdateEnemyHealthbar (health);
+		Debug.Log ("Enemy recieved: " + hp.damage + " health");
 	}
+		
+	public bool HealHoT(){
+		List<DamagePackage> toRemove = new List<DamagePackage> ();
+		foreach (DamagePackage HoT in HoTS) {
+			if (HoT.rounds > 0) {
+				health += HoT.damage;
+				//Update Healthbar
+				VisualController._instance.UpdateEnemyHealthbar (health);
+				Debug.Log ("Enemy recieved: " + HoT.OTDamage + " health, from HoT");
+				HoT.updateTimeLeft();
+			} else {
+				toRemove.Add (HoT);
+			}
+		}
+		foreach (DamagePackage HoT in toRemove) {
+			HoTS.Remove (HoT);
+		}
+		if (health <= 0) {
+			return true;
+		}
+		return false;
+	}
+
 
 	/// <summary>
 	/// My turn.
 	/// </summary>
 	public void MyTurn(){
+		Debug.Log ("Enemy turn!"+health);
 		//TODO: Need simple AI to pick attacks.
 		Skill ability = abilties[rnd.Next(0,3)];
 
 		Debug.Log ("Enemy used " + ability.name + "!");
 		if (ability.isSelfTarget ()) {
-			CombatController._instance.HealEnemy (ability.CalHeal (AP));
+			CombatController._instance.HealEnemy (ability.CalDmg (AP));
 		}
 		else {
 			CombatController._instance.AttackPlayer (ability.CalDmg(AP));
@@ -85,12 +135,20 @@ public class Enemy {
 		}
 	}
 
+	public void addDoT(DamagePackage dp) {
+		DoTS.Add (dp);
+	}
+
+	public void addHoT(DamagePackage dp) {
+		HoTS.Add (dp);
+	}
+
 	//Temporary solution, until we get another way to keep abilties.
 	private void addAbilities(){
-		abilties.Add (new Skill ("Swarm of Butterflies", false, 1, 10, 0));
+		abilties.Add (new Skill ("Swarm of Butterflies", false, 1, 10, 0, 2, 10));
 
 		abilties.Add (new Skill ("Elephant Stampede", false, 1, 20, 2));
 
-		abilties.Add (new Skill ("Flock of Cows", true, 1, 10, 0));
+		abilties.Add (new Skill ("Flock of Cows", true, 1, 10, 0, 2, 10));
 	}
 }

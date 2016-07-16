@@ -15,6 +15,9 @@ public class Player : MonoBehaviour {
 	bool myTurn = false;
 	//Players active abilties
 	List<Skill> abilties = new List<Skill>();
+	List<DamagePackage> DoTS = new List<DamagePackage>();
+	List<DamagePackage> HoTS = new List<DamagePackage>();
+
 
 	/// <summary>
 	/// Ínitialises data
@@ -42,15 +45,59 @@ public class Player : MonoBehaviour {
 		return false;
 	}
 
+	public bool TakeDoTDamage(){
+		List<DamagePackage> toRemove = new List<DamagePackage> ();
+		foreach (DamagePackage DoT in DoTS) {
+			if (DoT.rounds > 0) {
+				health -= DoT.damage;
+				//Update Healthbar
+				VisualController._instance.UpdatePlayerHealthbar (health);
+				Debug.Log ("Player took: " + DoT.OTDamage + " damage, from DoT");
+				DoT.updateTimeLeft();
+			} else {
+				toRemove.Add (DoT);
+			}
+		}
+		foreach (DamagePackage DoT in toRemove) {
+			DoTS.Remove (DoT);
+		}
+		if (health <= 0) {
+			return true;
+		}
+		return false;
+	}
+
 	/// <summary>
 	/// Heals the Player
 	/// </summary>
 	/// <param name="hp">Hp.</param>
-	public void HealUp(HealingPackage hp){
-		health += hp.healing;
+	public void HealUp(DamagePackage hp){
+		health += hp.damage;
 		//Updates the healthbar
 		VisualController._instance.UpdatePlayerHealthbar (health);
-		Debug.Log ("Player recieved: " + hp.healing + " health");
+		Debug.Log ("Player recieved: " + hp.damage + " health");
+	}
+
+	public bool HealHoT(){
+		List<DamagePackage> toRemove = new List<DamagePackage> ();
+		foreach (DamagePackage HoT in HoTS) {
+			if (HoT.rounds > 0) {
+				health += HoT.damage;
+				//Update Healthbar
+				VisualController._instance.UpdatePlayerHealthbar (health);
+				Debug.Log ("Player recieved: " + HoT.OTDamage + " health, from HoT");
+				HoT.updateTimeLeft();
+			} else {
+				toRemove.Add (HoT);
+			}
+		}
+		foreach (DamagePackage HoT in toRemove) {
+			HoTS.Remove (HoT);
+		}
+		if (health <= 0) {
+			return true;
+		}
+		return false;
 	}
 
 	/// <summary>
@@ -64,7 +111,7 @@ public class Player : MonoBehaviour {
 				} else {
 					myTurn = false;
 					Debug.Log ("Player used " + ability.name + "!");
-					CombatController._instance.HealPlayer (ability.CalHeal (AP));
+					CombatController._instance.HealPlayer (ability.CalDmg (AP));
 					updateCD ();
 					ability.setCD ();
 				}
@@ -100,6 +147,14 @@ public class Player : MonoBehaviour {
 		}
 	}
 
+	public void addDoT(DamagePackage dp) {
+		DoTS.Add (dp);
+	}
+
+	public void addHoT(DamagePackage dp) {
+		HoTS.Add (dp);
+	}
+
 	// Temporary solution, because I was unable to get info from button's in canvas.
 	// But.. it's an easy way to make the attack buttons.
 	public void attack1(){
@@ -118,7 +173,7 @@ public class Player : MonoBehaviour {
 	private void addAbilities(){
 		abilties.Add (new Skill ("Mega Punch", false, 1, 1, 0));
 
-		abilties.Add (new Skill ("Fireball", false, 3, 2, 1));
+		abilties.Add (new Skill ("Fireball", false, 3, 2, 1, 3, 1));
 
 		abilties.Add (new Skill ("Holy Hand", true, 1, 2, 2));
 	}
