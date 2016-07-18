@@ -364,20 +364,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   eDatabase:
   - visual: {fileID: 133962, guid: 2dfa41492b59f72439b4e345c018648e, type: 2}
-    type: 0
-    name: 
-    minLevel: 0
-    maxLevel: 10
-    forest: 0
-    cave: 0
-    dungeon: 1
-  - visual: {fileID: 134296, guid: 5e7d025c5f857eb41b2b3d6880b71ff7, type: 2}
     type: 1
-    name: 
+    name: Fire Circle
     minLevel: 0
-    maxLevel: 10
-    forest: 1
-    cave: 0
+    maxLevel: 100
+    forest: 0
+    cave: 1
+    dungeon: 0
+  - visual: {fileID: 124536, guid: 07d43eea435bda04b9e76edcfceedd95, type: 2}
+    type: 1
+    name: Fire Square
+    minLevel: 0
+    maxLevel: 100
+    forest: 0
+    cave: 1
     dungeon: 0
   - visual: {fileID: 113208, guid: 832907fea992b6e4a83d382902ae957b, type: 2}
     type: 2
@@ -387,6 +387,62 @@ MonoBehaviour:
     forest: 0
     cave: 1
     dungeon: 0
+  - visual: {fileID: 145312, guid: 780aa940c8a325440925306c8562958e, type: 2}
+    type: 1
+    name: Fire Hex
+    minLevel: 0
+    maxLevel: 100
+    forest: 0
+    cave: 1
+    dungeon: 0
+  - visual: {fileID: 134296, guid: 5e7d025c5f857eb41b2b3d6880b71ff7, type: 2}
+    type: 2
+    name: Forest Circle
+    minLevel: 0
+    maxLevel: 100
+    forest: 1
+    cave: 0
+    dungeon: 0
+  - visual: {fileID: 103646, guid: 747584a07f0ba244c85bc637478d418c, type: 2}
+    type: 2
+    name: Forest Square
+    minLevel: 0
+    maxLevel: 100
+    forest: 1
+    cave: 0
+    dungeon: 0
+  - visual: {fileID: 141136, guid: 00c0034fb588f43429dd65dbf2ae8804, type: 2}
+    type: 2
+    name: Forest Hex
+    minLevel: 0
+    maxLevel: 100
+    forest: 1
+    cave: 0
+    dungeon: 0
+  - visual: {fileID: 113208, guid: 832907fea992b6e4a83d382902ae957b, type: 2}
+    type: 0
+    name: Water Circle
+    minLevel: 0
+    maxLevel: 100
+    forest: 0
+    cave: 0
+    dungeon: 1
+  - visual: {fileID: 195460, guid: 8ba3eecf03da5ad4ba499c4174d7c5bd, type: 2}
+    type: 0
+    name: Water Sqaure
+    minLevel: 0
+    maxLevel: 100
+    forest: 0
+    cave: 0
+    dungeon: 1
+  - visual: {fileID: 120252, guid: c30aa76cee5d95a40bc3b0060b404ee8, type: 2}
+    type: 0
+    name: 
+    minLevel: 0
+    maxLevel: 100
+    forest: 0
+    cave: 0
+    dungeon: 1
 --- !u!4 &255734504
 Transform:
   m_ObjectHideFlags: 0
