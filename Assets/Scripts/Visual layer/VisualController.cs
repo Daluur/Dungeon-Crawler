@@ -4,9 +4,6 @@ using System.Collections;
 
 public class VisualController : MonoBehaviour {
 
-	/// <summary>
-	/// The instance of this singleton.
-	/// </summary>
 	public static VisualController _instance;
 
 	//The current gameobject of the visual enemy.
@@ -100,6 +97,10 @@ public class VisualController : MonoBehaviour {
 		playerMaxHealth = maxHealth;
 		playerHealthbarColor.color = Color.green;
 		playerHealthText.text = "" + maxHealth + "/" + maxHealth;
+	}
+
+	public void UpdatePlayerMaxHealth(int maxHealth){
+		playerMaxHealth = maxHealth;
 	}
 
 	public void UpdatePlayerHealthbar(int currHealth){

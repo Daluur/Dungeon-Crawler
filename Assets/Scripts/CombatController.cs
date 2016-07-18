@@ -6,9 +6,6 @@ using System.Collections;
 /// </summary>
 public class CombatController : MonoBehaviour {
 
-	/// <summary>
-	/// The instance of this singleton.
-	/// </summary>
 	public static CombatController _instance;
 
 	Dungeon currentDungeon;
@@ -116,6 +113,8 @@ public class CombatController : MonoBehaviour {
 		}
 		if (currentEnemy.TakeDoTDamage ()) {
 			Debug.Log ("Enemy died!");
+			VisualController._instance.RemoveEnemyVisual ();
+			currentDungeon.NextEncounter ();
 		} else {
 			//Says it is the enemies turn.
 			currentEnemy.MyTurn ();

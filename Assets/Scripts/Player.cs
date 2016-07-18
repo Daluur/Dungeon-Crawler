@@ -1,12 +1,21 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 
 
 public class Player : MonoBehaviour {
 
+	public static Player _instance;
+
 	//Players level
-	int level = 2;
+	int level;
+
+	int experience;
+
+	public int gold;
+
+	int rubies;
 	//Players current health.
 	int health;
 	//Players current AP
@@ -14,7 +23,7 @@ public class Player : MonoBehaviour {
 	//Whether or not it is the players turn.
 	bool myTurn = false;
 	//Players active abilties
-	List<Skill> abilties = new List<Skill>();
+	public List<Skill> abilties = new List<Skill>();
 	List<DamagePackage> DoTS = new List<DamagePackage>();
 	List<DamagePackage> HoTS = new List<DamagePackage>();
 
@@ -22,11 +31,46 @@ public class Player : MonoBehaviour {
 	/// <summary>
 	/// Ínitialises data
 	/// </summary>
-	void Start () {
-		health = 100 * level;
-		AP = 20 * level;
-		addAbilities ();
+	void Awake () {
+		if (_instance == null) {
+			_instance = this;
+		} else {
+			Debug.Log ("There are 2 players... somehow.. does it make sense?");
+		}
+
+		if (SaveLoad.SaveExist ()) {
+			loadPlayerData (SaveLoad.Load ());
+		} else {
+			NewPlayer ();
+		}
+
 		VisualController._instance.CreatePlayerHealthbar (health);
+	}
+
+	void OnApplicationQuit() {
+		SaveLoad.Save (Player._instance.savePlayerData());
+	}
+
+	public void NewPlayer() {
+		level = 1;
+		health = 300;
+		AP = 40;
+		experience = 0;
+		gold = 0;
+		rubies = 0;
+		VisualController._instance.CreatePlayerHealthbar (health);
+	}
+
+	public void addExperience(int level) {
+		experience += level * 10;
+	}	
+
+	public void addGold(int level) {
+		gold += level * 5;
+	}
+
+	public void addRubies(int level) {
+		rubies += level * 2;
 	}
 
 	/// <summary>
@@ -154,9 +198,8 @@ public class Player : MonoBehaviour {
 	public void addHoT(DamagePackage dp) {
 		HoTS.Add (dp);
 	}
-
-	// Temporary solution, because I was unable to get info from button's in canvas.
-	// But.. it's an easy way to make the attack buttons.
+		
+	// Wrappers for attacking
 	public void attack1(){
 		UseAbility(abilties [0]);
 	}
@@ -169,12 +212,32 @@ public class Player : MonoBehaviour {
 		UseAbility(abilties [2]);
 	}
 
-	// Temporary solution, until we get another way to keep abiltiies.
+	/* Temporary solution, until we get another way to keep abiltiies.
 	private void addAbilities(){
 		abilties.Add (new Skill ("Mega Punch", false, 1, 1, 0));
 
 		abilties.Add (new Skill ("Fireball", false, 3, 2, 1, 3, 1));
 
 		abilties.Add (new Skill ("Holy Hand", true, 1, 2, 2));
+	} */
+
+	public PlayerData savePlayerData() {
+		PlayerData data = new PlayerData ();
+		data.level = level;
+		data.health = health;
+		data.experience = experience;
+		data.gold = gold;
+		data.rubies = rubies;
+
+		return data;
+	}
+
+	public void loadPlayerData(PlayerData data) {
+		level = data.level;
+		health = data.health;
+		AP = level * 40;
+		experience = data.experience;
+		gold = data.gold;
+		rubies = data.rubies;
 	}
 }

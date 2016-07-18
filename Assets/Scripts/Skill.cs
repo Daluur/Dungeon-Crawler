@@ -1,26 +1,29 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
+
+[Serializable]
 
 public class Skill{
 
 	//Skill name
 	public string name;
 	//Skill type, self target or enemy target.
-	bool selfTar;
+	public bool selfTar;
 	//SKill elemental type
-	int type;
+	public int type;
 	//Skill damage, as AP multiplier
-	int APMult;
+	public int APMult;
 	//Skill Cooldown length
-	int CD;
+	public int CD;
 	//Skills current CD
-	int CDduration = 0;
+	public int CDduration = 0;
 	//Has over time effect
-	bool hasOT;
+	public bool hasOT;
 	//Number of rounds the effect lasts
-	int rounds;
+	public int rounds;
 	//The damage, as AP multiplier per round
-	int APMultPerRound;
+	public int APMultPerRound;
 
 
 	/// <summary>

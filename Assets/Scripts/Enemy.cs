@@ -48,6 +48,7 @@ public class Enemy {
 		VisualController._instance.UpdateEnemyHealthbar(health);
 		Debug.Log ("Enemy took: " + dp.damage + " damage");
 		if (health <= 0) {
+			Player._instance.addGold (level);
 			return true;
 		}
 		return false;
@@ -70,6 +71,7 @@ public class Enemy {
 			DoTS.Remove (DoT);
 		}
 		if (health <= 0) {
+			Player._instance.addGold (level);
 			return true;
 		}
 		return false;
@@ -103,6 +105,7 @@ public class Enemy {
 			HoTS.Remove (HoT);
 		}
 		if (health <= 0) {
+			Player._instance.addGold (level);
 			return true;
 		}
 		return false;
