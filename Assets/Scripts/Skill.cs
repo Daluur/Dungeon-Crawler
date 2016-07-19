@@ -1,20 +1,30 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
+
+[Serializable]
 
 public class Skill{
 
 	//Skill name
 	public string name;
 	//Skill type, self target or enemy target.
-	bool selfTar;
+	public bool selfTar;
 	//SKill elemental type
-	int type;
+	public int type;
 	//Skill damage, as AP multiplier
-	int APMult;
+	public int APMult;
 	//Skill Cooldown length
-	int CD;
+	public int CD;
 	//Skills current CD
-	int CDduration = 0;
+	public int CDduration = 0;
+	//Has over time effect
+	public bool hasOT;
+	//Number of rounds the effect lasts
+	public int rounds;
+	//The damage, as AP multiplier per round
+	public int APMultPerRound;
+
 
 	/// <summary>
 	/// Creates a new Skill
@@ -30,20 +40,29 @@ public class Skill{
 		type = newType;
 		APMult = newAPMult;
 		CD = newCD;
+		hasOT = false;
+	}
+
+	public Skill(string newName, bool newSelfTar, int newType, int newAPMult, int newCD, int newRounds, int newAPMultPerRound){
+		name = newName;
+		selfTar = newSelfTar;
+		type = newType;
+		APMult = newAPMult;
+		CD = newCD;
+		hasOT = true;
+		rounds = newRounds;
+		APMultPerRound = newAPMultPerRound;
 	}
 
 	/// <summary>
 	/// Calculates dmg and creates DamagePackage.
 	/// </summary>
 	public DamagePackage CalDmg(int AP){
-		return new DamagePackage (type, AP * APMult);
-	}
+		if (hasOT) {
+			return new DamagePackage (type, AP * APMult, rounds, AP * APMultPerRound);
+		}
 
-	/// <summary>
-	/// Calculates healing and creates HealingPackage.
-	/// </summary>
-	public HealingPackage CalHeal(int AP){
-		return new HealingPackage (type, AP * APMult);
+		return new DamagePackage (type, AP * APMult);
 	}
 
 	public bool isSelfTarget(){

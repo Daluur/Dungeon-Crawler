@@ -4,9 +4,6 @@ using System.Collections;
 
 public class VisualController : MonoBehaviour {
 
-	/// <summary>
-	/// The instance of this singleton.
-	/// </summary>
 	public static VisualController _instance;
 
 	//The current gameobject of the visual enemy.
@@ -50,7 +47,8 @@ public class VisualController : MonoBehaviour {
 			Debug.LogError ("There already is an enemy!");
 		}
 		currentEnemyInfo = e;
-		currentObj = Instantiate(e.visual,Vector3.zero,Quaternion.identity) as GameObject;
+		Vector3 lift = new Vector3 (0, 2.5F, 0);
+		currentObj = Instantiate(e.visual,lift,Quaternion.identity) as GameObject;
 	}
 
 	/// <summary>
@@ -99,6 +97,10 @@ public class VisualController : MonoBehaviour {
 		playerMaxHealth = maxHealth;
 		playerHealthbarColor.color = Color.green;
 		playerHealthText.text = "" + maxHealth + "/" + maxHealth;
+	}
+
+	public void UpdatePlayerMaxHealth(int maxHealth){
+		playerMaxHealth = maxHealth;
 	}
 
 	public void UpdatePlayerHealthbar(int currHealth){
