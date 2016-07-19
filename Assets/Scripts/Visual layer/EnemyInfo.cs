@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
-[System.Serializable]
+[Serializable]
 public class EnemyInfo {
 
 	//The prefab for the visual of this enemy.

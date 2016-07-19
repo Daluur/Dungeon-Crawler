@@ -4,9 +4,6 @@ using System.Collections.Generic;
 
 public class EnemyDatabase : MonoBehaviour {
 
-	/// <summary>
-	/// The instance of this singleton.
-	/// </summary>
 	public static EnemyDatabase _instance;
 
 	public List<EnemyInfo> eDatabase = new List<EnemyInfo> ();
