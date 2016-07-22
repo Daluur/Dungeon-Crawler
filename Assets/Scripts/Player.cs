@@ -122,7 +122,7 @@ public class Player : MonoBehaviour {
 		Debug.Log ("Player recieved: " + hp.damage + " health");
 	}
 
-	public bool HealHoT(){
+	public void HealHoT(){
 		List<DamagePackage> toRemove = new List<DamagePackage> ();
 		foreach (DamagePackage HoT in HoTS) {
 			if (HoT.rounds > 0) {
@@ -138,10 +138,6 @@ public class Player : MonoBehaviour {
 		foreach (DamagePackage HoT in toRemove) {
 			HoTS.Remove (HoT);
 		}
-		if (health <= 0) {
-			return true;
-		}
-		return false;
 	}
 
 	/// <summary>

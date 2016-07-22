@@ -88,7 +88,7 @@ public class Enemy {
 		Debug.Log ("Enemy recieved: " + hp.damage + " health");
 	}
 		
-	public bool HealHoT(){
+	public void HealHoT(){
 		List<DamagePackage> toRemove = new List<DamagePackage> ();
 		foreach (DamagePackage HoT in HoTS) {
 			if (HoT.rounds > 0) {
@@ -104,11 +104,6 @@ public class Enemy {
 		foreach (DamagePackage HoT in toRemove) {
 			HoTS.Remove (HoT);
 		}
-		if (health <= 0) {
-			Player._instance.addGold (level);
-			return true;
-		}
-		return false;
 	}
 
 
