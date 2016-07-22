@@ -3,17 +3,13 @@ using System.Collections;
 
 public class City : MonoBehaviour {
 
-	Dungeon testDungeon;
+	public int level = 1;
+	public int length = 5;
 
 	// Use this for initialization
 	void Start () {
 		GameStateManager._instance.SetTown (this);
 		GameStateManager._instance.EnterTown ();
-	}
-
-	void EnterTestDungeon(){
-		Debug.Log ("started a new dungeon");
-		testDungeon = new Dungeon (1,5,1);
 	}
 
 	//TODO check if the player unlocked things from the dungeon etc. in order to decide if new things should be visible in the town.
@@ -26,12 +22,11 @@ public class City : MonoBehaviour {
 	}
 
 	/// <summary>
-	/// Enters the dungeon.
+	/// Enters a dungeon.
 	/// </summary>
-	//TODO: needs to be able to specify which dungeon.
-	public void EnterDungeon(){
+	public void EnterDungeon(int i){
 		GameStateManager._instance.LeaveTown ();
 		GameStateManager._instance.EnterDungeon ();
-		EnterTestDungeon ();
+		new Dungeon ((ElementalType)i, length, level);
 	}
 }

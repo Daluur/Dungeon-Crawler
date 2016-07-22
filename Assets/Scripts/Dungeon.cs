@@ -3,8 +3,8 @@ using System.Collections;
 
 public class Dungeon {
 
-	//Which type, e.g. Dungeon, cave, forest w/e
-	int dungeonType;
+	//Which type, e.g. Fire, Water, Earth.
+	ElementalType dungeonType;
 	//How many enemies.
 	int length;
 	//Level you should be.
@@ -18,19 +18,19 @@ public class Dungeon {
 	/// <param name="newType">New type.</param>
 	/// <param name="newLengh">New lengh.</param>
 	/// <param name="newLevel">New level.</param>
-	public Dungeon(int newType, int newLengh, int newLevel){
+	public Dungeon(ElementalType newType, int newLengh, int newLevel){
 		dungeonType = newType;
 		length = newLengh;
 		level = newLevel;
 		//Changes the background color based on which dungeon type it is.
-		if (dungeonType == 0) {
-			VisualController._instance.ChangebackgroundColor (Color.green);
+		if (dungeonType == ElementalType.Earth) {
+			VisualController._instance.ChangebackgroundColor (new Color(0.23f,0.55f,0.23f));
 		}
-		else if (dungeonType == 1) {
-			VisualController._instance.ChangebackgroundColor (Color.gray);
+		else if (dungeonType == ElementalType.Fire) {
+			VisualController._instance.ChangebackgroundColor (new Color(0.55f,0.23f,0.23f));
 		}
-		else if (dungeonType == 2) {
-			VisualController._instance.ChangebackgroundColor (Color.black);
+		else if (dungeonType == ElementalType.Water) {
+			VisualController._instance.ChangebackgroundColor (new Color(0.23f,0.23f,0.55f));
 		}
 
 		//Tells the combat controller which dungeon we are in.
@@ -61,6 +61,6 @@ public class Dungeon {
 		//Creates the enemy visual.
 		VisualController._instance.CreateEnemyVisual (temp);
 		//Creates the actual enemy.
-		CombatController._instance.NewEnemy (new Enemy (temp.type, level, atIndex));
+		CombatController._instance.NewEnemy (new Enemy (temp.eType, level, atIndex));
 	}
 }
