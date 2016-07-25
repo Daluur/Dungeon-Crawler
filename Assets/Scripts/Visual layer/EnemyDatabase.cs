@@ -23,32 +23,14 @@ public class EnemyDatabase : MonoBehaviour {
 	/// Create the type of the enemy of.
 	/// </summary>
 	/// <returns>The enemy of type.</returns>
-	/// <param name="t">T.</param>
-	/// <param name="l">L.</param>
-	public EnemyInfo CreateEnemyOfType(int t, int l){
+	/// <param name="t">Type</param>
+	/// <param name="l">Level</param>
+	public EnemyInfo CreateEnemyOfType(ElementalType t, int l){
 		List<EnemyInfo> temp = new List<EnemyInfo> ();
-		//Finds which enemies it can spawn.
 		foreach (EnemyInfo item in eDatabase) {
 			if (item.minLevel <= l && item.maxLevel >= l) {
-				switch (t) {
-				case 0:
-					if (item.forest) {
-						temp.Add (item);
-					}
-					break;
-				case 1: 
-					if (item.cave) {
-						temp.Add (item);
-					}
-					break;
-				case 2:
-					if (item.dungeon) {
-						temp.Add (item);
-					}
-					break;
-				default:
-					Debug.LogError (t + " is not a valid dungoenType according to enemy spawning!");
-					break;
+				if (item.eType == t || item.eType == ElementalType.None) {
+					temp.Add (item);
 				}
 			}
 		}

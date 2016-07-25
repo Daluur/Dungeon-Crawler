@@ -6,7 +6,7 @@ using System;
 public class Enemy {
 
 	//Which type, e.g. fire, water, desert w/e.
-	int type;
+	ElementalType type;
 	//Its level.
 	int level;
 	//Its hp.
@@ -27,7 +27,7 @@ public class Enemy {
 	/// <param name="newType">New type.</param>
 	/// <param name="newLevel">New level.</param>
 	/// <param name="number">Number.</param>
-	public Enemy(int newType, int newLevel, int number){
+	public Enemy(ElementalType newType, int newLevel, int number){
 		type = newType;
 		level = newLevel;
 		health = level * 1000;

@@ -3,7 +3,6 @@ using System.Collections;
 using System;
 
 [Serializable]
-
 public class Skill{
 
 	//Skill name
@@ -42,6 +41,7 @@ public class Skill{
 		CD = newCD;
 		hasOT = false;
 	}
+
 
 	public Skill(string newName, bool newSelfTar, int newType, int newAPMult, int newCD, int newRounds, int newAPMultPerRound){
 		name = newName;
