@@ -9,23 +9,44 @@ public class Player : MonoBehaviour {
 	public static Player _instance;
 
 	//Players level
-	int level;
+	public int level;
 
-	int experience;
+	public int experience;
+
+	public int XPforLevel;
+
+	//Players current health.
+	public int health;
+
+	int bonusHealth;
+
+	//Players current AP
+	int AP;
+
+	int bonusAP;
+
+	float critChance;
+
+	int critRating;
+
+	float damageReduction;
+
+	public float additionReductions; // From Effects
+
+	int armor;
+
+
+	//Whether or not it is the players turn.
+	bool myTurn = false;
+
+	//Players active abilties
+	List<Skill> abilties = new List<Skill>();
+	List<Effect> effects = new List<Effect>();
 
 	public int gold;
 
 	int rubies;
-	//Players current health.
-	int health;
-	//Players current AP
-	int AP;
-	//Whether or not it is the players turn.
-	bool myTurn = false;
-	//Players active abilties
-	public List<Skill> abilties = new List<Skill>();
-	List<DamagePackage> DoTS = new List<DamagePackage>();
-	List<DamagePackage> HoTS = new List<DamagePackage>();
+
 
 
 	/// <summary>
@@ -43,7 +64,7 @@ public class Player : MonoBehaviour {
 		} else {
 			NewPlayer ();
 		}
-
+		AddAbilities ();
 		VisualController._instance.CreatePlayerHealthbar (health);
 	}
 
@@ -53,24 +74,36 @@ public class Player : MonoBehaviour {
 
 	public void NewPlayer() {
 		level = 1;
-		health = 300;
-		AP = 40;
 		experience = 0;
+		XPforLevel = 250;
+		health = 300;
+		bonusHealth = 0;
+		AP = 40;
+		bonusAP = 0;
+		critChance = 5.0F;
+		critRating = 0;
+		damageReduction = 0.0F;
+		armor = 0;
 		gold = 0;
 		rubies = 0;
 		VisualController._instance.CreatePlayerHealthbar (health);
 	}
 
-	public void addExperience(int level) {
-		experience += level * 10;
+	public void AddExperience(int Enemylevel) {
+		experience += Enemylevel * 100;
+		if (XPforLevel < experience) {
+			level++;
+			experience -= XPforLevel;
+			XPforLevel *= 2;
+		}
 	}	
 
-	public void addGold(int level) {
-		gold += level * 5;
+	public void AddGold(int Enemylevel) {
+		gold += Enemylevel * 5;
 	}
 
-	public void addRubies(int level) {
-		rubies += level * 2;
+	public void AddRubies(int Enemylevel) {
+		rubies += Enemylevel * 2;
 	}
 
 	/// <summary>
@@ -79,32 +112,12 @@ public class Player : MonoBehaviour {
 	/// <returns><c>true</c>, if dead, <c>false</c> otherwise.</returns>
 	/// <param name="dp">Dp.</param>
 	public bool TakeDamage(DamagePackage dp){
-		health -= dp.damage;
+		dp.DamageReduction (damageReduction);
+		dp.DamageReduction (additionReductions);
+		health -= (int)Math.Floor(dp.damage);
 		Debug.Log ("Player took: " + dp.damage + " damage");
 		//Updates the healthbar
 		VisualController._instance.UpdatePlayerHealthbar (health);
-		if (health <= 0) {
-			return true;
-		}
-		return false;
-	}
-
-	public bool TakeDoTDamage(){
-		List<DamagePackage> toRemove = new List<DamagePackage> ();
-		foreach (DamagePackage DoT in DoTS) {
-			if (DoT.rounds > 0) {
-				health -= DoT.damage;
-				//Update Healthbar
-				VisualController._instance.UpdatePlayerHealthbar (health);
-				Debug.Log ("Player took: " + DoT.OTDamage + " damage, from DoT");
-				DoT.updateTimeLeft();
-			} else {
-				toRemove.Add (DoT);
-			}
-		}
-		foreach (DamagePackage DoT in toRemove) {
-			DoTS.Remove (DoT);
-		}
 		if (health <= 0) {
 			return true;
 		}
@@ -116,28 +129,10 @@ public class Player : MonoBehaviour {
 	/// </summary>
 	/// <param name="hp">Hp.</param>
 	public void HealUp(DamagePackage hp){
-		health += hp.damage;
+		health += (int)Math.Floor(hp.damage);
+		Debug.Log ("Player recieved: " + hp.damage + " health");
 		//Updates the healthbar
 		VisualController._instance.UpdatePlayerHealthbar (health);
-		Debug.Log ("Player recieved: " + hp.damage + " health");
-	}
-
-	public void HealHoT(){
-		List<DamagePackage> toRemove = new List<DamagePackage> ();
-		foreach (DamagePackage HoT in HoTS) {
-			if (HoT.rounds > 0) {
-				health += HoT.damage;
-				//Update Healthbar
-				VisualController._instance.UpdatePlayerHealthbar (health);
-				Debug.Log ("Player recieved: " + HoT.OTDamage + " health, from HoT");
-				HoT.updateTimeLeft();
-			} else {
-				toRemove.Add (HoT);
-			}
-		}
-		foreach (DamagePackage HoT in toRemove) {
-			HoTS.Remove (HoT);
-		}
 	}
 
 	/// <summary>
@@ -150,9 +145,13 @@ public class Player : MonoBehaviour {
 					Debug.Log (ability.name + " is on Cooldown");
 				} else {
 					myTurn = false;
+					foreach (Effect eff in ability.effects) {
+						eff.ActivateEffect (this);
+						effects.Add (eff);
+					}
 					Debug.Log ("Player used " + ability.name + "!");
-					CombatController._instance.HealPlayer (ability.CalDmg (AP));
-					updateCD ();
+					CombatController._instance.HealPlayer (ability.CalDmg (AP, critChance));
+					UpdateCD ();
 					ability.setCD ();
 				}
 			}
@@ -161,12 +160,42 @@ public class Player : MonoBehaviour {
 					Debug.Log (ability.name + " is on Cooldown");
 				} else {
 					myTurn = false;
+					foreach (Effect eff in ability.effects) {
+						eff.ActivateEffect (this);
+						effects.Add (eff);
+					}
 					Debug.Log ("Player used " + ability.name + "!");
-					CombatController._instance.AttackEnemy (ability.CalDmg (AP));
-					updateCD ();
+					CombatController._instance.AttackEnemy (ability.CalDmg (AP, critChance));
+					UpdateCD ();
 					ability.setCD ();
 				}
 			}
+
+		}
+	}
+
+	public void UseEffect(Skill ability) {
+		if (ability.isSelfTarget()) { // Healing
+			Debug.Log ("Player used " + ability.name + "!");
+			CombatController._instance.HealPlayer (ability.CalDmg (AP, critChance));
+		} 
+		else { // Damage
+			Debug.Log ("Player used " + ability.name + "!");
+			CombatController._instance.EffectEnemy (ability.CalDmg (AP, critChance));
+		}
+
+
+	}
+
+	public void RemoveEffectsOnEnemy() {
+		List<Effect> toRemove = new List<Effect>();
+		foreach (Effect eff in effects) {
+			if (!eff.IsSelfTar()) {
+				toRemove.Add (eff);
+			}
+		}
+		foreach (Effect eff in toRemove) {
+			effects.Remove (eff);
 		}
 	}
 
@@ -175,53 +204,60 @@ public class Player : MonoBehaviour {
 	/// </summary>
 	public void MyTurn(){
 		Debug.Log ("Players turn!"+health);
+		List<Effect> toRemove = new List<Effect>();
+		foreach (Effect eff in effects) {
+			if (eff.IsOver ()) {
+				eff.DeactivateEffect (this);
+				toRemove.Add (eff);
+			} else {
+				eff.DoStuff (this);
+			}
+		}
+		foreach (Effect eff in toRemove) {
+			effects.Remove (eff);
+		}
 		myTurn = true;
 	}
 
 	/// <summary>
 	/// Decrement the CD for all Skills
 	/// </summary>
-	public void updateCD() {
+	public void UpdateCD() {
 		foreach (Skill attack in abilties) {
 			attack.updateCD();
 		}
 	}
-
-	public void addDoT(DamagePackage dp) {
-		DoTS.Add (dp);
-	}
-
-	public void addHoT(DamagePackage dp) {
-		HoTS.Add (dp);
-	}
 		
 	// Wrappers for attacking
-	public void attack1(){
+	public void Attack1(){
 		UseAbility(abilties [0]);
 	}
 
-	public void attack2(){
+	public void Attack2(){
 		UseAbility(abilties [1]);
 	}
 
-	public void attack3(){
+	public void Attack3(){
 		UseAbility(abilties [2]);
 	}
 
-	/* Temporary solution, until we get another way to keep abiltiies.
-	private void addAbilities(){
-		abilties.Add (new Skill ("Mega Punch", false, 1, 1, 0));
-
-		abilties.Add (new Skill ("Fireball", false, 3, 2, 1, 3, 1));
-
-		abilties.Add (new Skill ("Holy Hand", true, 1, 2, 2));
-	} */
+	private void AddAbilities(){
+		abilties.Add (new Skill ("Mega Punch", false, ElementalType.Earth, 1, 0));
+		abilties.Add (new Skill ("Fireball", false, ElementalType.Fire, 2, 1));
+		abilties.Add (new Skill ("Holy Hand", true, ElementalType.None, 2, 2));
+		abilties [1].AddEffect (new WeakOverTime());
+		abilties [2].AddEffect (new ReduceDamage ());
+	} 
 
 	public PlayerData savePlayerData() {
 		PlayerData data = new PlayerData ();
 		data.level = level;
-		data.health = health;
 		data.experience = experience;
+		data.XPforLevel = XPforLevel;
+		data.bonusHealth = bonusHealth;
+		data.bonusAP = bonusAP;
+		data.critRating = critRating;
+		data.armor = armor;
 		data.gold = gold;
 		data.rubies = rubies;
 
@@ -230,9 +266,16 @@ public class Player : MonoBehaviour {
 
 	public void loadPlayerData(PlayerData data) {
 		level = data.level;
-		health = data.health;
-		AP = level * 40;
 		experience = data.experience;
+		XPforLevel = data.XPforLevel;
+		bonusHealth = data.bonusHealth;
+		health = (3000 * level) + bonusHealth;
+		bonusAP = data.bonusAP;
+		AP = (level * 40) + bonusAP;
+		critRating = data.critRating;
+		critChance = 5.0F + (critRating / 22.5F); 
+		armor = data.armor;
+		damageReduction = 10.0F + (armor / 50);
 		gold = data.gold;
 		rubies = data.rubies;
 	}

@@ -241,7 +241,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 825686400}
-        m_MethodName: attack3
+        m_MethodName: Attack3
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1182,35 +1182,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98631127832a76844893a05cd8f89bd1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  level: 0
+  experience: 0
+  XPforLevel: 0
+  health: 5000
+  additionReductions: 0
   gold: 0
-  abilties:
-  - name: Mega Punch
-    selfTar: 0
-    type: 1
-    APMult: 1
-    CD: 0
-    CDduration: 0
-    hasOT: 0
-    rounds: 0
-    APMultPerRound: 0
-  - name: Fireball
-    selfTar: 0
-    type: 3
-    APMult: 2
-    CD: 1
-    CDduration: 0
-    hasOT: 1
-    rounds: 3
-    APMultPerRound: 1
-  - name: Holy Hand
-    selfTar: 1
-    type: 1
-    APMult: 2
-    CD: 2
-    CDduration: 0
-    hasOT: 0
-    rounds: 0
-    APMultPerRound: 0
 --- !u!4 &825686401
 Transform:
   m_ObjectHideFlags: 0
@@ -1380,7 +1357,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 825686400}
-        m_MethodName: attack1
+        m_MethodName: Attack1
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2363,7 +2340,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 825686400}
-        m_MethodName: attack2
+        m_MethodName: Attack2
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2662,6 +2639,107 @@ CanvasRenderer:
     type: 2}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1688484958}
+--- !u!1 &1736213835
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 1736213837}
+  - 114: {fileID: 1736213836}
+  m_Layer: 0
+  m_Name: Skil lDatabase
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1736213836
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1736213835}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8af40f0b3d1494a4489213490fba0fb6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sDatabase:
+  - name: 
+    selfTar: 0
+    type: 0
+    APMult: 0
+    CD: 0
+    CDduration: 0
+  - name: 
+    selfTar: 0
+    type: 0
+    APMult: 0
+    CD: 0
+    CDduration: 0
+  - name: 
+    selfTar: 0
+    type: 0
+    APMult: 0
+    CD: 0
+    CDduration: 0
+  - name: 
+    selfTar: 0
+    type: 0
+    APMult: 0
+    CD: 0
+    CDduration: 0
+  - name: 
+    selfTar: 0
+    type: 0
+    APMult: 0
+    CD: 0
+    CDduration: 0
+  - name: 
+    selfTar: 0
+    type: 0
+    APMult: 0
+    CD: 0
+    CDduration: 0
+  - name: 
+    selfTar: 0
+    type: 0
+    APMult: 0
+    CD: 0
+    CDduration: 0
+  - name: 
+    selfTar: 0
+    type: 0
+    APMult: 0
+    CD: 0
+    CDduration: 0
+  - name: 
+    selfTar: 0
+    type: 0
+    APMult: 0
+    CD: 0
+    CDduration: 0
+  - name: 
+    selfTar: 0
+    type: 0
+    APMult: 0
+    CD: 0
+    CDduration: 0
+--- !u!4 &1736213837
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1736213835}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 10
 --- !u!1 &1773600436
 GameObject:
   m_ObjectHideFlags: 0
@@ -3033,6 +3111,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 955ec945736508a4ab8169d13c50b525, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  level: 1
+  length: 5
 --- !u!4 &1981966257
 Transform:
   m_ObjectHideFlags: 0

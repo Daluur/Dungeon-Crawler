@@ -11,8 +11,15 @@ public class Enemy {
 	int level;
 	//Its hp.
 	int health;
+
+	float damageReduction;
+
+	int armor;
+
 	//Its attack power.
 	int AP;
+
+	float critChance;
 	//Its active abilities
 	List<Skill> abilties = new List<Skill>();
 	List<DamagePackage> DoTS = new List<DamagePackage>();
@@ -31,6 +38,9 @@ public class Enemy {
 		type = newType;
 		level = newLevel;
 		health = level * 1000;
+		damageReduction = 11.0F;
+		armor = 0;
+		critChance = level;
 		//Instansiate healthbar with max hp.
 		VisualController._instance.CreateEnemyHealthbar (health);
 		AP = level + number;
@@ -43,35 +53,14 @@ public class Enemy {
 	/// <returns><c>true</c>, if dead, <c>false</c> otherwise.</returns>
 	/// <param name="dp">Dp.</param>
 	public bool TakeDamage(DamagePackage dp){
-		health -= dp.damage;
+		dp.DamageReduction (damageReduction);
+		health -= (int)Math.Floor(dp.damage);
+		Debug.Log ("Enemy took: " + dp.damage + " damage");
 		//Update Healthbar
 		VisualController._instance.UpdateEnemyHealthbar(health);
-		Debug.Log ("Enemy took: " + dp.damage + " damage");
 		if (health <= 0) {
-			Player._instance.addGold (level);
-			return true;
-		}
-		return false;
-	}
-
-	public bool TakeDoTDamage(){
-		List<DamagePackage> toRemove = new List<DamagePackage> ();
-		foreach (DamagePackage DoT in DoTS) {
-			if (DoT.rounds > 0) {
-				health -= DoT.damage;
-				//Update Healthbar
-				VisualController._instance.UpdateEnemyHealthbar (health);
-				Debug.Log ("Enemy took: " + DoT.OTDamage + " damage, from DoT");
-				DoT.updateTimeLeft();
-			} else {
-				toRemove.Add (DoT);
-			}
-		}
-		foreach (DamagePackage DoT in toRemove) {
-			DoTS.Remove (DoT);
-		}
-		if (health <= 0) {
-			Player._instance.addGold (level);
+			Player._instance.AddGold (level);
+			Player._instance.AddExperience (level);
 			return true;
 		}
 		return false;
@@ -82,30 +71,11 @@ public class Enemy {
 	/// </summary>
 	/// <param name="hp">Hp.</param>
 	public void HealUp(DamagePackage hp){
-		health += hp.damage;
+		health += (int)Math.Floor(hp.damage);
+		Debug.Log ("Enemy recieved: " + hp.damage + " health");
 		//Update Healthbar
 		VisualController._instance.UpdateEnemyHealthbar (health);
-		Debug.Log ("Enemy recieved: " + hp.damage + " health");
 	}
-		
-	public void HealHoT(){
-		List<DamagePackage> toRemove = new List<DamagePackage> ();
-		foreach (DamagePackage HoT in HoTS) {
-			if (HoT.rounds > 0) {
-				health += HoT.damage;
-				//Update Healthbar
-				VisualController._instance.UpdateEnemyHealthbar (health);
-				Debug.Log ("Enemy recieved: " + HoT.OTDamage + " health, from HoT");
-				HoT.updateTimeLeft();
-			} else {
-				toRemove.Add (HoT);
-			}
-		}
-		foreach (DamagePackage HoT in toRemove) {
-			HoTS.Remove (HoT);
-		}
-	}
-
 
 	/// <summary>
 	/// My turn.
@@ -117,10 +87,10 @@ public class Enemy {
 
 		Debug.Log ("Enemy used " + ability.name + "!");
 		if (ability.isSelfTarget ()) {
-			CombatController._instance.HealEnemy (ability.CalDmg (AP));
+			CombatController._instance.HealEnemy (ability.CalDmg (AP, critChance));
 		}
 		else {
-			CombatController._instance.AttackPlayer (ability.CalDmg(AP));
+			CombatController._instance.AttackPlayer (ability.CalDmg(AP, critChance));
 		}
 	}
 
@@ -143,10 +113,10 @@ public class Enemy {
 
 	//Temporary solution, until we get another way to keep abilties.
 	private void addAbilities(){
-		abilties.Add (new Skill ("Swarm of Butterflies", false, 1, 10, 0, 2, 10));
+		abilties.Add (new Skill ("Swarm of Butterflies", false, ElementalType.Earth, 10, 0));
 
-		abilties.Add (new Skill ("Elephant Stampede", false, 1, 20, 2));
+		abilties.Add (new Skill ("Elephant Stampede", false, ElementalType.None, 10, 0));
 
-		abilties.Add (new Skill ("Flock of Cows", true, 1, 10, 0, 2, 10));
+		abilties.Add (new Skill ("Flock of Cows", false, ElementalType.None, 10, 0));
 	}
 }
