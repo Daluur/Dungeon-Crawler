@@ -7,16 +7,31 @@ using System.Collections;
 public class DamagePackage {
 
 	//Which type, e.g. fire, water, desert w/e.
-	public ElementalType type;
+	public int type;
 	//The damage.
-	public float damage;
+	public int damage;
 
-	public DamagePackage(ElementalType newType, float newDamage){
+	public bool isOT;
+
+	public int rounds;
+
+	public int OTDamage;
+
+	public DamagePackage(int newType, int newDamage){
 		type = newType;
 		damage = newDamage;
+		isOT = false;
 	}
 
-	public void DamageReduction(float reduction) { 
-		damage *= ((100-reduction)/100);
+	public DamagePackage(int newType, int newDamage, int newRounds, int newOTDamage) {
+		type = newType;
+		damage = newDamage;
+		isOT = true;
+		rounds = newRounds;
+		OTDamage = newOTDamage;
+	}
+
+	public void updateTimeLeft() {
+		rounds--;
 	}
 }

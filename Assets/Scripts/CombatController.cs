@@ -45,20 +45,21 @@ public class CombatController : MonoBehaviour {
 		if (currentEnemy.TakeDamage (dp)) {
 			Debug.Log ("Enemey Died!");
 			VisualController._instance.RemoveEnemyVisual ();
-			player.RemoveEffectsOnEnemy ();
-			currentDungeon.NextEncounter ();
+			//Shows the loot button.
+			VisualController._instance.ShowLootButton ();
 		} else {
-			//Says it is the enemies turn.
-			currentEnemy.MyTurn (); 
-		}
-	}
-
-	public void EffectEnemy(DamagePackage dp){
-		if (currentEnemy.TakeDamage (dp)) {
-			Debug.Log ("Enemey Died!");
-			VisualController._instance.RemoveEnemyVisual ();
-			player.RemoveEffectsOnEnemy ();
-			currentDungeon.NextEncounter ();
+			currentEnemy.HealHoT ();
+			if (currentEnemy.TakeDoTDamage ()) {
+				Debug.Log ("Enemey Died!");
+				VisualController._instance.RemoveEnemyVisual ();
+				currentDungeon.NextEncounter ();
+			} else {
+				if (dp.isOT) {
+					currentEnemy.addDoT (dp);
+				}
+				//Says it is the enemies turn.
+				currentEnemy.MyTurn (); 
+			}
 		}
 	}
 
@@ -68,9 +69,16 @@ public class CombatController : MonoBehaviour {
 	/// <param name="hp">Hp.</param>
 	public void HealEnemy(DamagePackage hp){
 		currentEnemy.HealUp (hp);
-
-		//Says it is the players turn.
-		player.MyTurn ();
+		currentEnemy.HealHoT ();
+		if (hp.isOT) {
+			currentEnemy.addHoT (hp);
+		}
+		if (player.TakeDoTDamage ()) {
+			Debug.Log ("Player died!");
+		} else {
+			//Says it is the players turn.
+			player.MyTurn ();
+		}
 	}
 
 	/// <summary>
@@ -81,8 +89,16 @@ public class CombatController : MonoBehaviour {
 		if (player.TakeDamage (dp)) {
 			Debug.Log ("Player died!");
 		} else {
-			//Says it is the players turn.
-			player.MyTurn ();
+			player.HealHoT ();
+			if (player.TakeDoTDamage ()) {
+				Debug.Log ("Player died!");
+			} else {
+				if (dp.isOT) {
+					player.addDoT (dp);
+				}
+				//Says it is the players turn.
+				player.MyTurn ();
+			}
 		}
 	}
 
@@ -92,13 +108,18 @@ public class CombatController : MonoBehaviour {
 	/// <param name="hp">Hp.</param>
 	public void HealPlayer(DamagePackage hp){
 		player.HealUp (hp);
-
-		//Says it is the enemies turn.
-		currentEnemy.MyTurn ();
-	}
-
-	public void EffectPlayer(DamagePackage hp) {
-		player.HealUp (hp);
+		player.HealHoT ();
+		if (hp.isOT) {
+			player.addHoT (hp);
+		}
+		if (currentEnemy.TakeDoTDamage ()) {
+			Debug.Log ("Enemy died!");
+			VisualController._instance.RemoveEnemyVisual ();
+			currentDungeon.NextEncounter ();
+		} else {
+			//Says it is the enemies turn.
+			currentEnemy.MyTurn ();
+		}
 	}
 
 	/// <summary>

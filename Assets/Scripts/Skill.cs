@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections;
-using System.Collections.Generic;
 using System;
 
 [Serializable]
@@ -11,25 +10,21 @@ public class Skill{
 	//Skill type, self target or enemy target.
 	public bool selfTar;
 	//SKill elemental type
-	public ElementalType type;
+	public int type;
 	//Skill damage, as AP multiplier
-	public float APMult;
+	public int APMult;
 	//Skill Cooldown length
 	public int CD;
 	//Skills current CD
 	public int CDduration = 0;
+	//Has over time effect
+	public bool hasOT;
+	//Number of rounds the effect lasts
+	public int rounds;
+	//The damage, as AP multiplier per round
+	public int APMultPerRound;
 
-	public List<Effect> effects = new List<Effect> ();
 
-	/// <summary>
-	/// Adds the effect.
-	/// </summary>
-	/// <param name="newEffect">New effect.</param>
-	public void AddEffect(Effect newEffect) {
-		newEffect.AddToSkill (this);
-		effects.Add (newEffect);
-	}
-		
 	/// <summary>
 	/// Creates a new Skill
 	/// </summary>
@@ -38,23 +33,35 @@ public class Skill{
 	/// <param name="newType">New Type.</param>
 	/// <param name="newAPMult">New AP Multiplier.</param>
 	/// <param name="newCD">New Cooldown.</param>
-	public Skill(string newName, bool newSelfTar, ElementalType newType, float newAPMult, int newCD){
+	public Skill(string newName, bool newSelfTar, int newType, int newAPMult, int newCD){
 		name = newName;
 		selfTar = newSelfTar;
 		type = newType;
 		APMult = newAPMult;
 		CD = newCD;
+		hasOT = false;
 	}
 
+
+	public Skill(string newName, bool newSelfTar, int newType, int newAPMult, int newCD, int newRounds, int newAPMultPerRound){
+		name = newName;
+		selfTar = newSelfTar;
+		type = newType;
+		APMult = newAPMult;
+		CD = newCD;
+		hasOT = true;
+		rounds = newRounds;
+		APMultPerRound = newAPMultPerRound;
+	}
 
 	/// <summary>
 	/// Calculates dmg and creates DamagePackage.
 	/// </summary>
-	public DamagePackage CalDmg(int AP, float critChance){
-		System.Random rnd = new System.Random();
-		if (rnd.Next (0, 100) < critChance) {
-			return new DamagePackage (type, (AP * APMult) * 2);
+	public DamagePackage CalDmg(int AP){
+		if (hasOT) {
+			return new DamagePackage (type, AP * APMult, rounds, AP * APMultPerRound);
 		}
+
 		return new DamagePackage (type, AP * APMult);
 	}
 
