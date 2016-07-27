@@ -12,7 +12,10 @@ public class Enemy {
 	//Its hp.
 	int health;
 
+	// Enemy Damage reductions and increases
 	float damageReduction;
+	public float damageIncrease;
+	public float additionalReductions; // From Effects, should probably be made a list
 
 	int armor;
 
@@ -22,8 +25,7 @@ public class Enemy {
 	float critChance;
 	//Its active abilities
 	List<Skill> abilties = new List<Skill>();
-	List<DamagePackage> DoTS = new List<DamagePackage>();
-	List<DamagePackage> HoTS = new List<DamagePackage>();
+	public List<Effect> effects = new List<Effect>();
 
 	System.Random rnd = new System.Random();
 
@@ -52,8 +54,10 @@ public class Enemy {
 	/// </summary>
 	/// <returns><c>true</c>, if dead, <c>false</c> otherwise.</returns>
 	/// <param name="dp">Dp.</param>
-	public bool TakeDamage(DamagePackage dp){
+	public bool TakeDamage(ref DamagePackage dp){
+		dp.DamageIncrease (damageIncrease);
 		dp.DamageReduction (damageReduction);
+		dp.DamageReduction (additionalReductions);
 		health -= (int)Math.Floor(dp.damage);
 		Debug.Log ("Enemy took: " + dp.damage + " damage");
 		//Update Healthbar
@@ -70,27 +74,65 @@ public class Enemy {
 	/// Heals the Enemy
 	/// </summary>
 	/// <param name="hp">Hp.</param>
-	public void HealUp(DamagePackage hp){
+	public void HealUp(ref DamagePackage hp){
 		health += (int)Math.Floor(hp.damage);
 		Debug.Log ("Enemy recieved: " + hp.damage + " health");
 		//Update Healthbar
 		VisualController._instance.UpdateEnemyHealthbar (health);
 	}
 
+	public void UseEffect(Skill ability) {
+		if (!ability.isSelfDamage()) { // Healing
+			Debug.Log ("Effect " + ability.name + "!");
+			CombatController._instance.EffectHealEnemy (ability.CalDmg (AP, critChance));
+		} 
+		else { // Damage
+			Debug.Log ("Effect " + ability.name + "!");
+			CombatController._instance.EffectAttackEnemy (ability.CalDmg (AP, critChance));
+		}
+	}
+
 	/// <summary>
 	/// My turn.
 	/// </summary>
 	public void MyTurn(){
-		Debug.Log ("Enemy turn!"+health);
+		Debug.Log ("Enemy turn!"+health);	
+		RunEffects ();
 		//TODO: Need simple AI to pick attacks.
 		Skill ability = abilties[rnd.Next(0,3)];
 
 		Debug.Log ("Enemy used " + ability.name + "!");
-		if (ability.isSelfTarget ()) {
-			CombatController._instance.HealEnemy (ability.CalDmg (AP, critChance));
+		foreach (Effect eff in ability.effects) {
+			if (eff.IsSelfTar()) {
+				eff.ActivateEffect (Player._instance, this);
+			} else {
+				eff.ActivateEffect (Player._instance);
+			}
 		}
-		else {
-			CombatController._instance.AttackPlayer (ability.CalDmg(AP, critChance));
+		if (ability.isSelfTarget()) { // Healing
+			if (ability.isSelfDamage ()) { //Damage
+				CombatController._instance.EnemySelfDamage (ability.CalDmg (AP, critChance));
+			} else {
+				CombatController._instance.HealEnemy (ability.CalDmg (AP, critChance));
+			}
+		}
+		else { // Damage
+			CombatController._instance.AttackPlayer (ability.CalDmg (AP, critChance));
+		}
+
+	}
+
+	void RunEffects () {
+		List<Effect> toRemove = new List<Effect>();
+		foreach (Effect eff in effects) {
+			if (eff.IsOver ()) {
+				toRemove.Add (eff);
+			} else {
+				eff.DoStuff (Player._instance, this);
+			}
+		}
+		foreach (Effect eff in toRemove) {
+			eff.DeactivateEffect (Player._instance, this);
 		}
 	}
 
@@ -103,14 +145,6 @@ public class Enemy {
 		}
 	}
 
-	public void addDoT(DamagePackage dp) {
-		DoTS.Add (dp);
-	}
-
-	public void addHoT(DamagePackage dp) {
-		HoTS.Add (dp);
-	}
-
 	//Temporary solution, until we get another way to keep abilties.
 	private void addAbilities(){
 		abilties.Add (new Skill ("Swarm of Butterflies", false, ElementalType.Earth, 10, 0));
@@ -118,5 +152,6 @@ public class Enemy {
 		abilties.Add (new Skill ("Elephant Stampede", false, ElementalType.None, 10, 0));
 
 		abilties.Add (new Skill ("Flock of Cows", false, ElementalType.None, 10, 0));
+		abilties [0].AddEffect (new WeakDamageOverTime ());
 	}
 }

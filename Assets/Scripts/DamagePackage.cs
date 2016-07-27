@@ -17,6 +17,10 @@ public class DamagePackage {
 	}
 
 	public void DamageReduction(float reduction) { 
-		damage *= ((100-reduction)/100);
+		damage *= ((100 - reduction) / 100);
+	}
+
+	public void DamageIncrease(float increase) {
+		damage *= ((100 + increase) / 100);
 	}
 }

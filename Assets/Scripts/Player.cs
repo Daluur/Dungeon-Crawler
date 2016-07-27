@@ -7,41 +7,41 @@ using System;
 public class Player : MonoBehaviour {
 
 	public static Player _instance;
+	CombatController CC;
 
 	//Players level
 	public int level;
-
 	public int experience;
-
 	public int XPforLevel;
 
 	//Players current health.
 	public int health;
-
 	int bonusHealth;
 
 	//Players current AP
-	int AP;
-
+	public int AP;
 	int bonusAP;
 
+	//Players current crit
 	float critChance;
-
 	int critRating;
 
+	// Player Damage reductions and increases
 	float damageReduction;
-
-	public float additionReductions; // From Effects
-
+	public float damageIncrease;
+	public float additionalReductions; // From Effects, should probably be made a list
 	int armor;
 
 
 	//Whether or not it is the players turn.
 	bool myTurn = false;
+	bool isStun = false;
+	public bool isMultiRoundAttack = false;
+	public Skill multiRoundAttack;
 
 	//Players active abilties
 	List<Skill> abilties = new List<Skill>();
-	List<Effect> effects = new List<Effect>();
+	public List<Effect> effects = new List<Effect>();
 
 	public int gold;
 
@@ -64,14 +64,21 @@ public class Player : MonoBehaviour {
 		} else {
 			NewPlayer ();
 		}
+		CC = CombatController._instance;
 		AddAbilities ();
 		VisualController._instance.CreatePlayerHealthbar (health);
 	}
 
+	/// <summary>
+	/// Saves PlayerData on exit
+	/// </summary>
 	void OnApplicationQuit() {
 		SaveLoad.Save (Player._instance.savePlayerData());
 	}
 
+	/// <summary>
+	/// Creates new Player
+	/// </summary>
 	public void NewPlayer() {
 		level = 1;
 		experience = 0;
@@ -89,6 +96,10 @@ public class Player : MonoBehaviour {
 		VisualController._instance.CreatePlayerHealthbar (health);
 	}
 
+	/// <summary>
+	/// Adds experience.
+	/// </summary>
+	/// <param name="Enemylevel">Enemylevel.</param>
 	public void AddExperience(int Enemylevel) {
 		experience += Enemylevel * 100;
 		if (XPforLevel < experience) {
@@ -98,10 +109,18 @@ public class Player : MonoBehaviour {
 		}
 	}	
 
+	/// <summary>
+	/// Adds gold.
+	/// </summary>
+	/// <param name="Enemylevel">Enemylevel.</param>
 	public void AddGold(int Enemylevel) {
 		gold += Enemylevel * 5;
 	}
 
+	/// <summary>
+	/// Adds rubies.
+	/// </summary>
+	/// <param name="Enemylevel">Enemylevel.</param>
 	public void AddRubies(int Enemylevel) {
 		rubies += Enemylevel * 2;
 	}
@@ -111,9 +130,10 @@ public class Player : MonoBehaviour {
 	/// </summary>
 	/// <returns><c>true</c>, if dead, <c>false</c> otherwise.</returns>
 	/// <param name="dp">Dp.</param>
-	public bool TakeDamage(DamagePackage dp){
+	public bool TakeDamage(ref DamagePackage dp){
+		dp.DamageIncrease (damageIncrease);
 		dp.DamageReduction (damageReduction);
-		dp.DamageReduction (additionReductions);
+		dp.DamageReduction (additionalReductions);
 		health -= (int)Math.Floor(dp.damage);
 		Debug.Log ("Player took: " + dp.damage + " damage");
 		//Updates the healthbar
@@ -128,7 +148,7 @@ public class Player : MonoBehaviour {
 	/// Heals the Player
 	/// </summary>
 	/// <param name="hp">Hp.</param>
-	public void HealUp(DamagePackage hp){
+	public void HealUp(ref DamagePackage hp){
 		health += (int)Math.Floor(hp.damage);
 		Debug.Log ("Player recieved: " + hp.damage + " health");
 		//Updates the healthbar
@@ -140,89 +160,74 @@ public class Player : MonoBehaviour {
 	/// </summary>
 	public void UseAbility(Skill ability){
 		if (myTurn) {
-			if (ability.isSelfTarget()) { // Healing
-				if (ability.onCD ()) {
-					Debug.Log (ability.name + " is on Cooldown");
-				} else {
-					myTurn = false;
-					foreach (Effect eff in ability.effects) {
+			if (ability.onCD ()) {
+				Debug.Log (ability.name + " is on Cooldown");
+			} else {
+				myTurn = false;
+				Debug.Log ("Player used " + ability.name + "!");
+				UpdateCD ();
+				ability.setCD ();
+				foreach (Effect eff in ability.effects) {
+					if (eff.IsSelfTar()) {
 						eff.ActivateEffect (this);
-						effects.Add (eff);
+					} else {
+						eff.ActivateEffect (this, CC.currentEnemy);
 					}
-					Debug.Log ("Player used " + ability.name + "!");
-					CombatController._instance.HealPlayer (ability.CalDmg (AP, critChance));
-					UpdateCD ();
-					ability.setCD ();
 				}
-			}
-			else { // Damage
-				if (ability.onCD ()) {
-					Debug.Log (ability.name + " is on Cooldown");
-				} else {
-					myTurn = false;
-					foreach (Effect eff in ability.effects) {
-						eff.ActivateEffect (this);
-						effects.Add (eff);
+				if (ability.isSelfTarget()) { // Healing
+					if (ability.isSelfDamage ()) { //Damage
+						CombatController._instance.PlayerSelfDamage (ability.CalDmg (AP, critChance));
+					} else {
+						CombatController._instance.HealPlayer (ability.CalDmg (AP, critChance));
 					}
-					Debug.Log ("Player used " + ability.name + "!");
+				}
+				else { // Damage
 					CombatController._instance.AttackEnemy (ability.CalDmg (AP, critChance));
-					UpdateCD ();
-					ability.setCD ();
+
 				}
 			}
-
 		}
 	}
 
 	public void UseEffect(Skill ability) {
-		if (ability.isSelfTarget()) { // Healing
-			Debug.Log ("Player used " + ability.name + "!");
-			CombatController._instance.HealPlayer (ability.CalDmg (AP, critChance));
+		if (!ability.isSelfDamage()) { // Healing
+			Debug.Log ("Effect " + ability.name + "!");
+			CombatController._instance.EffectHealPlayer (ability.CalDmg (AP, critChance));
 		} 
 		else { // Damage
-			Debug.Log ("Player used " + ability.name + "!");
-			CombatController._instance.EffectEnemy (ability.CalDmg (AP, critChance));
+			Debug.Log ("Effect " + ability.name + "!");
+			CombatController._instance.EffectAttackPlayer (ability.CalDmg (AP, critChance));
 		}
+}
 
-
-	}
-
-	public void RemoveEffectsOnEnemy() {
-		List<Effect> toRemove = new List<Effect>();
-		foreach (Effect eff in effects) {
-			if (!eff.IsSelfTar()) {
-				toRemove.Add (eff);
-			}
-		}
-		foreach (Effect eff in toRemove) {
-			effects.Remove (eff);
-		}
-	}
 
 	/// <summary>
 	/// Allows the player to perform his turn.
 	/// </summary>
 	public void MyTurn(){
 		Debug.Log ("Players turn!"+health);
+		RunEffects ();
+		myTurn = true;
+	}
+
+	void RunEffects () {
 		List<Effect> toRemove = new List<Effect>();
 		foreach (Effect eff in effects) {
 			if (eff.IsOver ()) {
-				eff.DeactivateEffect (this);
 				toRemove.Add (eff);
 			} else {
 				eff.DoStuff (this);
 			}
 		}
 		foreach (Effect eff in toRemove) {
-			effects.Remove (eff);
+			eff.DeactivateEffect (this);
 		}
-		myTurn = true;
 	}
 
 	/// <summary>
 	/// Decrement the CD for all Skills
 	/// </summary>
-	public void UpdateCD() {
+	void UpdateCD() {
 		foreach (Skill attack in abilties) {
 			attack.updateCD();
 		}
@@ -245,8 +250,7 @@ public class Player : MonoBehaviour {
 		abilties.Add (new Skill ("Mega Punch", false, ElementalType.Earth, 1, 0));
 		abilties.Add (new Skill ("Fireball", false, ElementalType.Fire, 2, 1));
 		abilties.Add (new Skill ("Holy Hand", true, ElementalType.None, 2, 2));
-		abilties [1].AddEffect (new WeakOverTime());
-		abilties [2].AddEffect (new ReduceDamage ());
+		abilties [1].AddEffect (new WeakDamageOverTime());
 	} 
 
 	public PlayerData savePlayerData() {

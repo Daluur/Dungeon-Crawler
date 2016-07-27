@@ -10,6 +10,7 @@ public class Skill{
 	public string name;
 	//Skill type, self target or enemy target.
 	public bool selfTar;
+	public bool selfDam;
 	//SKill elemental type
 	public ElementalType type;
 	//Skill damage, as AP multiplier
@@ -19,16 +20,8 @@ public class Skill{
 	//Skills current CD
 	public int CDduration = 0;
 
+	public Effect mainEffect;
 	public List<Effect> effects = new List<Effect> ();
-
-	/// <summary>
-	/// Adds the effect.
-	/// </summary>
-	/// <param name="newEffect">New effect.</param>
-	public void AddEffect(Effect newEffect) {
-		newEffect.AddToSkill (this);
-		effects.Add (newEffect);
-	}
 		
 	/// <summary>
 	/// Creates a new Skill
@@ -38,14 +31,14 @@ public class Skill{
 	/// <param name="newType">New Type.</param>
 	/// <param name="newAPMult">New AP Multiplier.</param>
 	/// <param name="newCD">New Cooldown.</param>
-	public Skill(string newName, bool newSelfTar, ElementalType newType, float newAPMult, int newCD){
+	public Skill(string newName, bool newSelfTar, ElementalType newType, float newAPMult, int newCD, bool newSelfDam = false){
 		name = newName;
 		selfTar = newSelfTar;
+		selfDam = newSelfDam;
 		type = newType;
 		APMult = newAPMult;
 		CD = newCD;
 	}
-
 
 	/// <summary>
 	/// Calculates dmg and creates DamagePackage.
@@ -60,6 +53,10 @@ public class Skill{
 
 	public bool isSelfTarget(){
 		return selfTar;
+	}
+
+	public bool isSelfDamage(){
+		return selfDam;
 	}
 
 	/// <summary>

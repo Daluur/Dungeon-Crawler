@@ -2649,7 +2649,7 @@ GameObject:
   - 4: {fileID: 1736213837}
   - 114: {fileID: 1736213836}
   m_Layer: 0
-  m_Name: Skil lDatabase
+  m_Name: SkillDatabase
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

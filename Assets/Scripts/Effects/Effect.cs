@@ -4,9 +4,9 @@ using System.Collections;
 public interface Effect {
 
 	void AddToSkill (Skill skill);
-	void ActivateEffect(Player player);
-	void DoStuff(Player player);
-	void DeactivateEffect(Player player);
+	void ActivateEffect(Player player, Enemy enemy = null);
+	void DoStuff(Player player, Enemy enemy = null);
+	void DeactivateEffect(Player player, Enemy enemy = null);
 	bool IsOver ();
 	bool IsSelfTar ();
 }
