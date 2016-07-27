@@ -2,18 +2,8 @@
 using System.Collections;
 
 public class ReduceDamageTaken : Effect {
-
-	string name = "Buff";
-
-	string description = "Reduce all damage taken by 50%";
-
-	//Skill type, self target or enemy target.
-	bool selfTar;
-
-	public int round = 3;
-
-
-	public void AddToSkill(Skill skill) {
+	
+	public override void AddToSkill(Skill skill) {
 		selfTar = skill.selfTar;
 	}
 
@@ -21,7 +11,7 @@ public class ReduceDamageTaken : Effect {
 		round--;
 	}
 
-	public void ActivateEffect(Player player = null, Enemy enemy = null) {
+	public override void ActivateEffect(Player player, Enemy enemy, PCNPC whoUsedIt) {
 		if (enemy == null) {
 			player.effects.Add (this);
 			player.additionalReductions = 50.0F;
@@ -31,12 +21,12 @@ public class ReduceDamageTaken : Effect {
 		}
 	}
 
-	public void DoStuff(Player player = null, Enemy enemy = null) {
+	public override void DoStuff(Player player, Enemy enemy, PCNPC whoUsedIt) {
 		if (enemy == null) {} else {}
 		round--;
 	}
 
-	public void DeactivateEffect(Player player = null, Enemy enemy = null) {
+	public override void DeactivateEffect(Player player, Enemy enemy, PCNPC whoUsedIt) {
 		if (enemy == null) {
 			player.effects.Remove (this);
 			player.additionalReductions = 0.0F;
@@ -47,14 +37,10 @@ public class ReduceDamageTaken : Effect {
 		round = 3;
 	}
 
-	public bool IsOver () {
+	public override bool IsOver () {
 		if (round > 0) {
 			return false;
 		}
 		return true;
-	}
-
-	public bool IsSelfTar() {
-		return selfTar;
 	}
 }

@@ -12,6 +12,13 @@ public class Enemy {
 	//Its hp.
 	int health;
 
+	//Its attack power.
+	public int AP;
+
+	float critChance;
+
+
+
 	// Enemy Damage reductions and increases
 	float damageReduction;
 	public float damageIncrease;
@@ -19,10 +26,10 @@ public class Enemy {
 
 	int armor;
 
-	//Its attack power.
-	int AP;
+	bool isStun;
+	public bool isMultiRoundAttack = false;
+	public Skill multiRoundAttack = null;
 
-	float critChance;
 	//Its active abilities
 	List<Skill> abilties = new List<Skill>();
 	public List<Effect> effects = new List<Effect>();
@@ -39,9 +46,8 @@ public class Enemy {
 	public Enemy(ElementalType newType, int newLevel, int number){
 		type = newType;
 		level = newLevel;
-		health = level * 1000;
+		health = level * 10000;
 		damageReduction = 11.0F;
-		armor = 0;
 		critChance = level;
 		//Instansiate healthbar with max hp.
 		VisualController._instance.CreateEnemyHealthbar (health);
@@ -81,14 +87,14 @@ public class Enemy {
 		VisualController._instance.UpdateEnemyHealthbar (health);
 	}
 
-	public void UseEffect(Skill ability) {
-		if (!ability.isSelfDamage()) { // Healing
+	public void UseEffect(Skill ability, int tempAP) {
+		if (!ability.selfDam) { // Healing
 			Debug.Log ("Effect " + ability.name + "!");
-			CombatController._instance.EffectHealEnemy (ability.CalDmg (AP, critChance));
+			CombatController._instance.EffectHealEnemy (ability.CalDmg (tempAP, critChance));
 		} 
 		else { // Damage
 			Debug.Log ("Effect " + ability.name + "!");
-			CombatController._instance.EffectAttackEnemy (ability.CalDmg (AP, critChance));
+			CombatController._instance.EffectAttackEnemy (ability.CalDmg (tempAP, critChance));
 		}
 	}
 
@@ -103,14 +109,14 @@ public class Enemy {
 
 		Debug.Log ("Enemy used " + ability.name + "!");
 		foreach (Effect eff in ability.effects) {
-			if (eff.IsSelfTar()) {
-				eff.ActivateEffect (Player._instance, this);
+			if (eff.selfTar) {
+				eff.ActivateEffect (Player._instance, this, PCNPC.NPC);
 			} else {
-				eff.ActivateEffect (Player._instance);
+				eff.ActivateEffect (Player._instance, this, PCNPC.NPC);
 			}
 		}
-		if (ability.isSelfTarget()) { // Healing
-			if (ability.isSelfDamage ()) { //Damage
+		if (ability.selfTar) { // Healing
+			if (ability.selfDam) { //Damage
 				CombatController._instance.EnemySelfDamage (ability.CalDmg (AP, critChance));
 			} else {
 				CombatController._instance.HealEnemy (ability.CalDmg (AP, critChance));
@@ -128,11 +134,11 @@ public class Enemy {
 			if (eff.IsOver ()) {
 				toRemove.Add (eff);
 			} else {
-				eff.DoStuff (Player._instance, this);
+				eff.DoStuff (Player._instance, this, PCNPC.NPC);
 			}
 		}
 		foreach (Effect eff in toRemove) {
-			eff.DeactivateEffect (Player._instance, this);
+			eff.DeactivateEffect (Player._instance, this, PCNPC.NPC);
 		}
 	}
 
@@ -141,17 +147,16 @@ public class Enemy {
 	/// </summary>
 	public void updateCD() {
 		foreach (Skill attack in abilties) {
-			attack.updateCD();
+			attack.UpdateCD();
 		}
 	}
 
 	//Temporary solution, until we get another way to keep abilties.
 	private void addAbilities(){
-		abilties.Add (new Skill ("Swarm of Butterflies", false, ElementalType.Earth, 10, 0));
+		abilties.Add (new SwarmOfButterflies());
 
-		abilties.Add (new Skill ("Elephant Stampede", false, ElementalType.None, 10, 0));
+		abilties.Add (new ElephantStampede());
 
-		abilties.Add (new Skill ("Flock of Cows", false, ElementalType.None, 10, 0));
-		abilties [0].AddEffect (new WeakDamageOverTime ());
+		abilties.Add (new FlockOfCows());
 	}
 }

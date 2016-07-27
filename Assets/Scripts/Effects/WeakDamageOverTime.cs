@@ -3,57 +3,52 @@ using System.Collections;
 
 public class WeakDamageOverTime : Effect {
 
-	string description = "Adds damage over time effect: 15% of direct damage per round for 3 rounds.";
-
-	//Skill type, self target or enemy target.
+		//Skill type, self target or enemy target.
 	Skill simpleSkill;
-	bool selfTar;
+	int apWhenActivated;
 
-	public int round = 3;
-
-
-	public void AddToSkill(Skill skill) {
+	public WeakDamageOverTime(Skill skill) {
 		selfTar = skill.selfTar;
-		simpleSkill = new Skill ("Over Time", true, skill.type, skill.APMult * 0.15F, 0, true);
-
-
+		simpleSkill = new SimpleSkill ("Damage Over Time", true, skill.type, skill.APMult * 0.15F, true);
 	}
 
-	public void ActivateEffect(Player player, Enemy enemy = null) {
-		if (enemy == null) {
+	public override void AddToSkill(Skill skill) {
+		selfTar = skill.selfTar;
+		simpleSkill = new SimpleSkill ("Damage Over Time", true, skill.type, skill.APMult * 0.15F, true);
+	}
+
+	public override void ActivateEffect(Player player, Enemy enemy, PCNPC whoUsedIt) {
+		if (whoUsedIt == PCNPC.NPC) {
+			apWhenActivated = enemy.AP;
 			player.effects.Add (this);
 		} else {
+			apWhenActivated = player.AP;
 			enemy.effects.Add (this);
 		}
 	}
 
-	public void DoStuff(Player player, Enemy enemy = null) {
-		if (enemy == null) {
-			player.UseEffect (simpleSkill);
+	public override void DoStuff(Player player, Enemy enemy, PCNPC whoUsedIt) {
+		if (whoUsedIt == PCNPC.NPC) {
+			enemy.UseEffect (simpleSkill, apWhenActivated);
 		} else {
-			enemy.UseEffect (simpleSkill);
+			player.UseEffect (simpleSkill, apWhenActivated);
 		}
 		round--;
 	}
 
-	public void DeactivateEffect(Player player, Enemy enemy = null) {
-		if (enemy == null) {
-			player.effects.Remove (this);
-		} else {
+	public override void DeactivateEffect(Player player, Enemy enemy, PCNPC whoUsedIt) {
+		if (whoUsedIt == PCNPC.NPC) {
 			enemy.effects.Remove (this);
+		} else {
+			player.effects.Remove (this);
 		}
 		round = 3;
 	}
 
-	public bool IsOver () {
+	public override bool IsOver () {
 		if (round > 0) {
 			return false;
 		}
 		return true;
 	}
-
-	public bool IsSelfTar() {
-		return selfTar;
-	}
-
 }

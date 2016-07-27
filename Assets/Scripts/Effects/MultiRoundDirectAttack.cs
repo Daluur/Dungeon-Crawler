@@ -3,58 +3,55 @@ using System.Collections;
 
 public class MultiRoundDirectAttack : Effect {
 
-	string name = "Buff";
-
-	string description = "Multi round attack";
-
 	//Skill type, self target or enemy target.
-	bool selfTar;
-
-	public int round = 3;
+	Skill simpleSkill;
 
 
-	public void AddToSkill(Skill skill) {
+
+	public override void AddToSkill(Skill skill) {
 		selfTar = skill.selfTar;
+		simpleSkill = new SimpleSkill ("Flurry", skill.selfTar, skill.type, skill.APMult * 0.15F);
+
 	}
 
 	public void UpdateTimeLeft() {
 		round--;
 	}
 
-	public void ActivateEffect(Player player = null, Enemy enemy = null) {
+	public override void ActivateEffect(Player player, Enemy enemy, PCNPC whoUsedIt) {
 		if (enemy == null) {
 			player.effects.Add (this);
-			player.additionalReductions = 50.0F;
+			player.isMultiRoundAttack = true;
+			player.multiRoundAttack = simpleSkill;
 		} else {
 			enemy.effects.Add (this);
-			enemy.additionalReductions = 50.0F;
+			enemy.isMultiRoundAttack = true;
+			enemy.multiRoundAttack = simpleSkill;
 		}
 	}
 
-	public void DoStuff(Player player = null, Enemy enemy = null) {
+	public override void DoStuff(Player player, Enemy enemy, PCNPC whoUsedIt) {
 		if (enemy == null) {} else {}
 		round--;
 	}
 
-	public void DeactivateEffect(Player player = null, Enemy enemy = null) {
+	public override void DeactivateEffect(Player player, Enemy enemy, PCNPC whoUsedIt) {
 		if (enemy == null) {
-			player.effects.Remove (this);
-			player.additionalReductions = 0.0F;
+			player.effects.Remove (this);			
+			player.isMultiRoundAttack = false;
+			player.multiRoundAttack = null;
 		} else {
 			enemy.effects.Remove (this);
-			enemy.additionalReductions = 0.0F;
+			enemy.isMultiRoundAttack = false;
+			enemy.multiRoundAttack = null;
 		}
 		round = 3;
 	}
 
-	public bool IsOver () {
+	public override bool IsOver () {
 		if (round > 0) {
 			return false;
 		}
 		return true;
-	}
-
-	public bool IsSelfTar() {
-		return selfTar;
 	}
 }

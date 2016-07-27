@@ -3,40 +3,40 @@ using System.Collections;
 
 public class WeakHealingOverTime : Effect {
 
-	string description = "Adds healing over time effect: 15% of direct damage per round for 3 rounds.";
-
 	//Skill type, self target or enemy target.
 	Skill simpleSkill;
-	bool selfTar;
+	int apWhenActivated;
 
-	public int round = 3;
-
-
-	public void AddToSkill(Skill skill) {
+	public WeakHealingOverTime(Skill skill) {
 		selfTar = skill.selfTar;
-		simpleSkill = new Skill ("Over Time", true, skill.type, skill.APMult * 0.15F, 0, false);
-
-
+		simpleSkill = new SimpleSkill ("Healing Over Time", true, skill.type, skill.APMult * 0.15F, false);
 	}
 
-	public void ActivateEffect(Player player, Enemy enemy = null) {
+	public override void AddToSkill(Skill skill) {
+		selfTar = skill.selfTar;
+		simpleSkill = new SimpleSkill ("Healing Over Time", true, skill.type, skill.APMult * 0.15F, false);
+	}
+
+	public override void ActivateEffect(Player player, Enemy enemy, PCNPC whoUsedIt) {
 		if (enemy == null) {
+			apWhenActivated = player.AP;
 			player.effects.Add (this);
 		} else {
+			apWhenActivated = enemy.AP;
 			enemy.effects.Add (this);
 		}
 	}
 
-	public void DoStuff(Player player, Enemy enemy = null) {
+		public override void DoStuff(Player player, Enemy enemy, PCNPC whoUsedIt) {
 		if (enemy == null) {
-			player.UseEffect (simpleSkill);
+			player.UseEffect (simpleSkill, apWhenActivated);
 		} else {
-			enemy.UseEffect (simpleSkill);
+			enemy.UseEffect (simpleSkill, apWhenActivated);
 		}
 		round--;
 	}
 
-	public void DeactivateEffect(Player player, Enemy enemy = null) {
+		public override void DeactivateEffect(Player player, Enemy enemy, PCNPC whoUsedIt) {
 		if (enemy == null) {
 			player.effects.Remove (this);
 		} else {
@@ -45,15 +45,10 @@ public class WeakHealingOverTime : Effect {
 		round = 3;
 	}
 
-	public bool IsOver () {
+	public override bool IsOver () {
 		if (round > 0) {
 			return false;
 		}
 		return true;
 	}
-
-	public bool IsSelfTar() {
-		return selfTar;
-	}
-
 }

@@ -35,9 +35,9 @@ public class Player : MonoBehaviour {
 
 	//Whether or not it is the players turn.
 	bool myTurn = false;
-	bool isStun = false;
+	bool isStun;
 	public bool isMultiRoundAttack = false;
-	public Skill multiRoundAttack;
+	public Skill multiRoundAttack = null;
 
 	//Players active abilties
 	List<Skill> abilties = new List<Skill>();
@@ -160,22 +160,22 @@ public class Player : MonoBehaviour {
 	/// </summary>
 	public void UseAbility(Skill ability){
 		if (myTurn) {
-			if (ability.onCD ()) {
+			if (ability.OnCD ()) {
 				Debug.Log (ability.name + " is on Cooldown");
 			} else {
 				myTurn = false;
 				Debug.Log ("Player used " + ability.name + "!");
 				UpdateCD ();
-				ability.setCD ();
+				ability.SetCD ();
 				foreach (Effect eff in ability.effects) {
-					if (eff.IsSelfTar()) {
-						eff.ActivateEffect (this);
+					if (eff.selfTar) {
+						eff.ActivateEffect (this, CC.currentEnemy, PCNPC.PC);
 					} else {
-						eff.ActivateEffect (this, CC.currentEnemy);
+						eff.ActivateEffect (this, CC.currentEnemy, PCNPC.PC);
 					}
 				}
-				if (ability.isSelfTarget()) { // Healing
-					if (ability.isSelfDamage ()) { //Damage
+				if (ability.selfTar) { // Healing
+					if (ability.selfDam) { //Damage
 						CombatController._instance.PlayerSelfDamage (ability.CalDmg (AP, critChance));
 					} else {
 						CombatController._instance.HealPlayer (ability.CalDmg (AP, critChance));
@@ -189,14 +189,14 @@ public class Player : MonoBehaviour {
 		}
 	}
 
-	public void UseEffect(Skill ability) {
-		if (!ability.isSelfDamage()) { // Healing
+	public void UseEffect(Skill ability, int tempAP) {
+		if (!ability.selfDam) { // Healing
 			Debug.Log ("Effect " + ability.name + "!");
 			CombatController._instance.EffectHealPlayer (ability.CalDmg (AP, critChance));
 		} 
 		else { // Damage
 			Debug.Log ("Effect " + ability.name + "!");
-			CombatController._instance.EffectAttackPlayer (ability.CalDmg (AP, critChance));
+			CombatController._instance.EffectAttackPlayer (ability.CalDmg (tempAP, critChance));
 		}
 }
 
@@ -216,11 +216,11 @@ public class Player : MonoBehaviour {
 			if (eff.IsOver ()) {
 				toRemove.Add (eff);
 			} else {
-				eff.DoStuff (this);
+				eff.DoStuff (this, CC.currentEnemy, PCNPC.PC);
 			}
 		}
 		foreach (Effect eff in toRemove) {
-			eff.DeactivateEffect (this);
+			eff.DeactivateEffect (this, CC.currentEnemy, PCNPC.PC);
 		}
 	}
 
@@ -229,7 +229,7 @@ public class Player : MonoBehaviour {
 	/// </summary>
 	void UpdateCD() {
 		foreach (Skill attack in abilties) {
-			attack.updateCD();
+			attack.UpdateCD();
 		}
 	}
 		
@@ -247,10 +247,9 @@ public class Player : MonoBehaviour {
 	}
 
 	private void AddAbilities(){
-		abilties.Add (new Skill ("Mega Punch", false, ElementalType.Earth, 1, 0));
-		abilties.Add (new Skill ("Fireball", false, ElementalType.Fire, 2, 1));
-		abilties.Add (new Skill ("Holy Hand", true, ElementalType.None, 2, 2));
-		abilties [1].AddEffect (new WeakDamageOverTime());
+		abilties.Add (new MegaPunch());
+		abilties.Add (new Fireball());
+		abilties.Add (new HolyHand());
 	} 
 
 	public PlayerData savePlayerData() {

@@ -1,12 +1,15 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public interface Effect {
+abstract public class Effect {
 
-	void AddToSkill (Skill skill);
-	void ActivateEffect(Player player, Enemy enemy = null);
-	void DoStuff(Player player, Enemy enemy = null);
-	void DeactivateEffect(Player player, Enemy enemy = null);
-	bool IsOver ();
-	bool IsSelfTar ();
+	public bool selfTar;
+
+	public int round = 3;
+	
+	abstract public void AddToSkill (Skill skill);
+	abstract public void ActivateEffect(Player player, Enemy enemy, PCNPC whoUsedIt);
+	abstract public void DoStuff(Player player, Enemy enemy, PCNPC whoUsedIt);
+	abstract public void DeactivateEffect(Player player, Enemy enemy, PCNPC whoUsedIt);
+	abstract public bool IsOver ();
 }
