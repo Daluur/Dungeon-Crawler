@@ -11,6 +11,8 @@ public class CombatController : MonoBehaviour {
 	Dungeon currentDungeon;
 	Enemy currentEnemy;
 	public Player player;
+	bool playersTurn = true;
+	bool waitingToFinishAnimations = false;
 
 	/// <summary>
 	/// Makes it a singleton.
@@ -58,7 +60,9 @@ public class CombatController : MonoBehaviour {
 					currentEnemy.addDoT (dp);
 				}
 				//Says it is the enemies turn.
-				currentEnemy.MyTurn (); 
+				//CombatText._instance.ShowInfo("Enemies turn!");
+				TryEndTurn();
+				//currentEnemy.MyTurn ();
 			}
 		}
 	}
@@ -76,8 +80,9 @@ public class CombatController : MonoBehaviour {
 		if (player.TakeDoTDamage ()) {
 			Debug.Log ("Player died!");
 		} else {
-			//Says it is the players turn.
-			player.MyTurn ();
+
+			TryEndTurn ();
+			//player.MyTurn ();
 		}
 	}
 
@@ -97,7 +102,9 @@ public class CombatController : MonoBehaviour {
 					player.addDoT (dp);
 				}
 				//Says it is the players turn.
-				player.MyTurn ();
+				//CombatText._instance.ShowInfo("Your turn!");
+				TryEndTurn();
+				//player.MyTurn ();
 			}
 		}
 	}
@@ -117,8 +124,8 @@ public class CombatController : MonoBehaviour {
 			VisualController._instance.RemoveEnemyVisual ();
 			currentDungeon.NextEncounter ();
 		} else {
-			//Says it is the enemies turn.
-			currentEnemy.MyTurn ();
+			TryEndTurn ();
+			//currentEnemy.MyTurn ();
 		}
 	}
 
@@ -137,5 +144,28 @@ public class CombatController : MonoBehaviour {
 		VisualController._instance.RemoveLootButton ();
 		Debug.Log ("Player recieved some loot (NYI)");
 		VisualController._instance.ShowNextEncounterButton ();
+	}
+
+	void TryEndTurn(){
+		if (CombatText._instance.IsPlayingAnimation ()) {
+			waitingToFinishAnimations = true;
+		} else {
+			if (playersTurn) {
+				//Says it is the enemies turn.
+				CombatText._instance.ShowInfo("Enemies turn!");
+				currentEnemy.MyTurn ();
+			} else {
+				//Says it is the players turn.
+				CombatText._instance.ShowInfo("Your turn!");
+				player.MyTurn ();
+			}
+			playersTurn = !playersTurn;
+		}
+	}
+
+	public void FinishedAnimations(){
+		if (waitingToFinishAnimations) {
+			Invoke("TryEndTurn",2f);
+		}
 	}
 }

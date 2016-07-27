@@ -24,7 +24,7 @@ public static class SaveLoad {
 	}
 
 	public static bool SaveExist() {
-		return File.Exists (Application.persistentDataPath + "/PlayerData.dat");
-
+		//return File.Exists (Application.persistentDataPath + "/PlayerData.dat");
+		return false;
 	}
 }
