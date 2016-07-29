@@ -16,6 +16,7 @@ public class Player : MonoBehaviour {
 
 	//Players current health.
 	public int health;
+	public int maxHealth;
 	int bonusHealth;
 
 	//Players current AP
@@ -28,14 +29,16 @@ public class Player : MonoBehaviour {
 
 	// Player Damage reductions and increases
 	float damageReduction;
-	public float damageIncrease;
-	public float additionalReductions; // From Effects, should probably be made a list
 	int armor;
+
+	public float damageIncrease;
+	public float additionalReductions; 
+
 
 
 	//Whether or not it is the players turn.
 	bool myTurn = false;
-	bool isStun;
+	public bool isStun;
 	public bool isMultiRoundAttack = false;
 	public Skill multiRoundAttack = null;
 
@@ -83,7 +86,8 @@ public class Player : MonoBehaviour {
 		level = 1;
 		experience = 0;
 		XPforLevel = 250;
-		health = 300;
+		maxHealth = 300;
+		health = maxHealth;
 		bonusHealth = 0;
 		AP = 40;
 		bonusAP = 0;
@@ -129,7 +133,7 @@ public class Player : MonoBehaviour {
 	/// Takes the damage.
 	/// </summary>
 	/// <returns><c>true</c>, if dead, <c>false</c> otherwise.</returns>
-	/// <param name="dp">Dp.</param>
+	/// <param name="dp">DamagePackage.</param>
 	public bool TakeDamage(ref DamagePackage dp){
 		dp.DamageIncrease (damageIncrease);
 		dp.DamageReduction (damageReduction);
@@ -147,7 +151,7 @@ public class Player : MonoBehaviour {
 	/// <summary>
 	/// Heals the Player
 	/// </summary>
-	/// <param name="hp">Hp.</param>
+	/// <param name="hp">DamagePackage.</param>
 	public void HealUp(ref DamagePackage hp){
 		health += (int)Math.Floor(hp.damage);
 		Debug.Log ("Player recieved: " + hp.damage + " health");
@@ -156,23 +160,19 @@ public class Player : MonoBehaviour {
 	}
 
 	/// <summary>
-	/// Uses an Ability.
+	/// Uses ability.
 	/// </summary>
+	/// <param name="ability">Ability.</param>
 	public void UseAbility(Skill ability){
 		if (myTurn) {
-			if (ability.OnCD ()) {
+			if (ability.IsOnCD ()) {
 				Debug.Log (ability.name + " is on Cooldown");
 			} else {
 				myTurn = false;
 				Debug.Log ("Player used " + ability.name + "!");
-				UpdateCD ();
-				ability.SetCD ();
+				ability.ActivateCD ();
 				foreach (Effect eff in ability.effects) {
-					if (eff.selfTar) {
-						eff.ActivateEffect (this, CC.currentEnemy, PCNPC.PC);
-					} else {
-						eff.ActivateEffect (this, CC.currentEnemy, PCNPC.PC);
-					}
+					eff.ActivateEffect (this, CC.currentEnemy, PCNPC.PC);
 				}
 				if (ability.selfTar) { // Healing
 					if (ability.selfDam) { //Damage
@@ -189,6 +189,11 @@ public class Player : MonoBehaviour {
 		}
 	}
 
+	/// <summary>
+	/// Uses effect.
+	/// </summary>
+	/// <param name="ability">Ability</param>
+	/// <param name="tempAP">Temporary AP</param>
 	public void UseEffect(Skill ability, int tempAP) {
 		if (!ability.selfDam) { // Healing
 			Debug.Log ("Effect " + ability.name + "!");
@@ -205,11 +210,20 @@ public class Player : MonoBehaviour {
 	/// Allows the player to perform his turn.
 	/// </summary>
 	public void MyTurn(){
-		Debug.Log ("Players turn!"+health);
+		Debug.Log ("Players turn!" + health);
+		UpdateCD ();
 		RunEffects ();
-		myTurn = true;
+		if (isStun) {
+			Debug.Log ("Player is Stunned");
+			CC.currentEnemy.MyTurn ();
+		} else {
+			myTurn = true;
+		}
 	}
 
+	// <summary>
+	/// Runs the effects.
+	/// </summary>/
 	void RunEffects () {
 		List<Effect> toRemove = new List<Effect>();
 		foreach (Effect eff in effects) {
@@ -222,6 +236,37 @@ public class Player : MonoBehaviour {
 		foreach (Effect eff in toRemove) {
 			eff.DeactivateEffect (this, CC.currentEnemy, PCNPC.PC);
 		}
+	}
+
+	/// <summary>
+	/// Adds the effect.
+	/// </summary>
+	/// <param name="eff">Effect</param>
+	public void AddEffect(Effect eff) {
+		if (eff.stackable) {
+			effects.Add (eff);
+		} else {
+			bool nameMatch = false;
+			for (int i = 0; i < effects.Count; i++) {
+				if(eff.name == effects[i].name) {
+					nameMatch = true;
+					if (eff.effectFromSkill == effects [i].effectFromSkill) {
+						effects [i].ResetEffect (this, CC.currentEnemy, PCNPC.PC);
+					}
+				}
+			}
+			if (!nameMatch) {
+				effects.Add (eff);
+			}
+		}
+	}
+
+	/// <summary>
+	/// Removes the effect.
+	/// </summary>
+	/// <param name="eff">Effect</param>
+	public void RemoveEffect(Effect eff) {
+		effects.Remove (eff);
 	}
 
 	/// <summary>
@@ -272,7 +317,8 @@ public class Player : MonoBehaviour {
 		experience = data.experience;
 		XPforLevel = data.XPforLevel;
 		bonusHealth = data.bonusHealth;
-		health = (3000 * level) + bonusHealth;
+		maxHealth = (3000 * level) + bonusHealth;
+		health = maxHealth;
 		bonusAP = data.bonusAP;
 		AP = (level * 40) + bonusAP;
 		critRating = data.critRating;

@@ -7,41 +7,48 @@ public class WeakHealingOverTime : Effect {
 	Skill simpleSkill;
 	int apWhenActivated;
 
+	new int round = 3;
+
 	public WeakHealingOverTime(Skill skill) {
-		selfTar = skill.selfTar;
+		name = "Weak Healing Over Time";
+		effectFromSkill = skill.name;
 		simpleSkill = new SimpleSkill ("Healing Over Time", true, skill.type, skill.APMult * 0.15F, false);
 	}
 
 	public override void AddToSkill(Skill skill) {
-		selfTar = skill.selfTar;
+		effectFromSkill = skill.name;
 		simpleSkill = new SimpleSkill ("Healing Over Time", true, skill.type, skill.APMult * 0.15F, false);
 	}
 
 	public override void ActivateEffect(Player player, Enemy enemy, PCNPC whoUsedIt) {
-		if (enemy == null) {
-			apWhenActivated = player.AP;
-			player.effects.Add (this);
-		} else {
+		if (whoUsedIt == PCNPC.NPC) {
+			enemy.AddEffect (this);
 			apWhenActivated = enemy.AP;
-			enemy.effects.Add (this);
+		} else {
+			player.AddEffect (this);
+			apWhenActivated = player.AP;
 		}
 	}
 
 		public override void DoStuff(Player player, Enemy enemy, PCNPC whoUsedIt) {
-		if (enemy == null) {
-			player.UseEffect (simpleSkill, apWhenActivated);
-		} else {
+		if (whoUsedIt == PCNPC.NPC) {
 			enemy.UseEffect (simpleSkill, apWhenActivated);
+		} else {
+			player.UseEffect (simpleSkill, apWhenActivated);
 		}
 		round--;
 	}
 
 		public override void DeactivateEffect(Player player, Enemy enemy, PCNPC whoUsedIt) {
-		if (enemy == null) {
-			player.effects.Remove (this);
+		if (whoUsedIt == PCNPC.NPC) {
+			enemy.RemoveEffect (this);
 		} else {
-			enemy.effects.Remove (this);
+			player.RemoveEffect (this);
 		}
+		round = 3;
+	}
+
+	public override void ResetEffect (Player player, Enemy enemy, PCNPC whoUsedIt) {
 		round = 3;
 	}
 

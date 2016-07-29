@@ -1,18 +1,18 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class ReduceDamageTaken : Effect {
+public class Stun : Effect {
 
-	new public string name = "Reduce Damage Taken";
+	new public string name = "Stun";
 	bool selfTar;
 
-	new int round = 2;
+	new int round = 1;
 
-	public ReduceDamageTaken(Skill skill) {
+	public Stun(Skill skill) {
 		effectFromSkill = skill.name;
 		selfTar = skill.selfTar;
 	}
-	
+
 	public override void AddToSkill(Skill skill) {
 		effectFromSkill = skill.name;
 		selfTar = skill.selfTar;
@@ -22,40 +22,44 @@ public class ReduceDamageTaken : Effect {
 		if (selfTar) {
 			if (whoUsedIt == PCNPC.NPC) {
 				enemy.AddEffect (this);
-				enemy.additionalReductions = 50.0F;
+				enemy.isStun = true;
 			} else {
 				player.AddEffect (this);
-				player.additionalReductions = 50.0F;
+				player.isStun = true;
 			}
 		} else {
 			if (whoUsedIt == PCNPC.NPC) {
 				player.AddEffect (this);
-				player.additionalReductions = 50.0F;
+				player.isStun = true;
 			} else {
 				enemy.AddEffect (this);
-				enemy.additionalReductions = 50.0F;
+				enemy.isStun = true;
 			}
 		}
 	}
 
 	public override void DoStuff(Player player, Enemy enemy, PCNPC whoUsedIt) {
-		if (enemy == null) {} else {}
+		if (whoUsedIt == PCNPC.NPC) {
+			enemy.isStun = true;
+		} else {
+			player.isStun = true;
+		}
 		round--;
 	}
 
 	public override void DeactivateEffect(Player player, Enemy enemy, PCNPC whoUsedIt) {
 		if (whoUsedIt == PCNPC.NPC) {
 			enemy.RemoveEffect (this);
-			enemy.additionalReductions = 0.0F;
+			enemy.isStun = false;
 		} else {
 			player.RemoveEffect (this);
-			player.additionalReductions = 0.0F;
+			player.isStun = false;
 		}
-		round = 2;
+		round = 1;
 	}
 
 	public override void ResetEffect (Player player, Enemy enemy, PCNPC whoUsedIt) {
-		round = 2;
+		round = 1;
 	}
 
 	public override bool IsOver () {

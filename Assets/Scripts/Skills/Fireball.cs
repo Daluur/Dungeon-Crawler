@@ -11,13 +11,10 @@ public class Fireball : Skill {
 		selfDam = false;
 		type = ElementalType.Fire;
 		APMult = 20;
-		CD = 1;
+		CDduration = 2;
 		effects.Add(new WeakDamageOverTime (this));
 	}
 
-	/// <summary>
-	/// Calculates dmg and creates DamagePackage.
-	/// </summary>
 	public override DamagePackage CalDmg(int AP, float critChance){
 		System.Random rnd = new System.Random();
 		if (rnd.Next (0, 100) < critChance) {
@@ -31,25 +28,15 @@ public class Fireball : Skill {
 		effects.Add(newEffect);
 	}
 
-	/// <summary>
-	/// Set Cooldown.
-	/// </summary>
-	public override void SetCD() {
-		CD = CD;
+	public override void ActivateCD() {
+		CD = CDduration;
 	}
 
-	/// <summary>
-	/// Update Cooldown.
-	/// </summary>
 	public override void UpdateCD() {
 		CD--;
 	}
 
-	/// <summary>
-	/// Check if Skill is on Cooldown.
-	/// </summary>
-	/// <returns><c>true</c>, if on cooldown, <c>false</c> otherwise.</returns>
-	public override bool OnCD(){
+	public override bool IsOnCD(){
 		if (CD > 0) {
 			return true;
 		}

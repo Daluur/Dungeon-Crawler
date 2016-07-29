@@ -21,12 +21,13 @@ public class Enemy {
 
 	// Enemy Damage reductions and increases
 	float damageReduction;
-	public float damageIncrease;
-	public float additionalReductions; // From Effects, should probably be made a list
-
 	int armor;
 
-	bool isStun;
+	public float damageIncrease;
+	public float additionalReductions; 
+
+
+	public bool isStun;
 	public bool isMultiRoundAttack = false;
 	public Skill multiRoundAttack = null;
 
@@ -42,11 +43,11 @@ public class Enemy {
 	/// </summary>
 	/// <param name="newType">New type.</param>
 	/// <param name="newLevel">New level.</param>
-	/// <param name="number">Number.</param>
+	/// <param name="number">Number</param>
 	public Enemy(ElementalType newType, int newLevel, int number){
 		type = newType;
 		level = newLevel;
-		health = level * 10000;
+		health = level * 100000;
 		damageReduction = 11.0F;
 		critChance = level;
 		//Instansiate healthbar with max hp.
@@ -59,7 +60,7 @@ public class Enemy {
 	/// Takes the damage.
 	/// </summary>
 	/// <returns><c>true</c>, if dead, <c>false</c> otherwise.</returns>
-	/// <param name="dp">Dp.</param>
+	/// <param name="dp">DamagePackage</param>
 	public bool TakeDamage(ref DamagePackage dp){
 		dp.DamageIncrease (damageIncrease);
 		dp.DamageReduction (damageReduction);
@@ -79,7 +80,7 @@ public class Enemy {
 	/// <summary>
 	/// Heals the Enemy
 	/// </summary>
-	/// <param name="hp">Hp.</param>
+	/// <param name="hp">DamagePackage</param>
 	public void HealUp(ref DamagePackage hp){
 		health += (int)Math.Floor(hp.damage);
 		Debug.Log ("Enemy recieved: " + hp.damage + " health");
@@ -87,6 +88,11 @@ public class Enemy {
 		VisualController._instance.UpdateEnemyHealthbar (health);
 	}
 
+	/// <summary>
+	/// Uses effect.
+	/// </summary>
+	/// <param name="ability">Ability.</param>
+	/// <param name="tempAP">Temporary AP</param>
 	public void UseEffect(Skill ability, int tempAP) {
 		if (!ability.selfDam) { // Healing
 			Debug.Log ("Effect " + ability.name + "!");
@@ -103,17 +109,33 @@ public class Enemy {
 	/// </summary>
 	public void MyTurn(){
 		Debug.Log ("Enemy turn!"+health);	
+		UpdateCD ();
 		RunEffects ();
-		//TODO: Need simple AI to pick attacks.
-		Skill ability = abilties[rnd.Next(0,3)];
+		if (isStun) {
+			Debug.Log ("Enemy is Stunned");
+			Player._instance.MyTurn ();
+		} else {
+			UseAttack ();
+		}
 
+
+	}
+
+	/// <summary>
+	/// Pick and use an attack
+	/// </summary>
+	void UseAttack() {
+		//TODO: Need simple AI to pick attacks.
+		Skill ability = abilties[2];
+
+		while (ability.IsOnCD ()) {
+			ability = abilties [rnd.Next (0, 2)];
+		}
 		Debug.Log ("Enemy used " + ability.name + "!");
+
+		ability.ActivateCD ();
 		foreach (Effect eff in ability.effects) {
-			if (eff.selfTar) {
-				eff.ActivateEffect (Player._instance, this, PCNPC.NPC);
-			} else {
-				eff.ActivateEffect (Player._instance, this, PCNPC.NPC);
-			}
+			eff.ActivateEffect (Player._instance, this, PCNPC.NPC);
 		}
 		if (ability.selfTar) { // Healing
 			if (ability.selfDam) { //Damage
@@ -121,13 +143,14 @@ public class Enemy {
 			} else {
 				CombatController._instance.HealEnemy (ability.CalDmg (AP, critChance));
 			}
-		}
-		else { // Damage
+		} else { // Damage
 			CombatController._instance.AttackPlayer (ability.CalDmg (AP, critChance));
 		}
-
 	}
 
+	/// <summary>
+	/// Runs the effects.
+	/// </summary>
 	void RunEffects () {
 		List<Effect> toRemove = new List<Effect>();
 		foreach (Effect eff in effects) {
@@ -143,20 +166,51 @@ public class Enemy {
 	}
 
 	/// <summary>
+	/// Adds the effect.
+	/// </summary>
+	/// <param name="eff">Effect</param>
+	public void AddEffect(Effect eff) {
+		if (eff.stackable) {
+			effects.Add (eff);
+		} else {
+			bool nameMatch = false;
+			for (int i = 0; i < effects.Count; i++) {
+				if(eff.name == effects[i].name) {
+					nameMatch = true;
+					if (eff.effectFromSkill == effects [i].effectFromSkill) {
+						effects [i].ResetEffect (Player._instance, this, PCNPC.NPC);
+					}
+				}
+			}
+			if (!nameMatch) {
+				effects.Add (eff);
+			}
+		}
+	}
+
+	/// <summary>
+	/// Removes the effect.
+	/// </summary>
+	/// <param name="eff">Effect</param>
+	public void RemoveEffect(Effect eff) {
+		effects.Remove (eff);
+	}
+
+	/// <summary>
 	/// Decrement the CD for all Skills
 	/// </summary>
-	public void updateCD() {
-		foreach (Skill attack in abilties) {
-			attack.UpdateCD();
+	public void UpdateCD() {
+		foreach (Skill ability in abilties) {
+			ability.UpdateCD();
 		}
 	}
 
 	//Temporary solution, until we get another way to keep abilties.
 	private void addAbilities(){
 		abilties.Add (new SwarmOfButterflies());
-
+		abilties.Add (new FlockOfCows());
 		abilties.Add (new ElephantStampede());
 
-		abilties.Add (new FlockOfCows());
+
 	}
 }

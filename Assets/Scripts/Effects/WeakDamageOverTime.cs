@@ -4,26 +4,30 @@ using System.Collections;
 public class WeakDamageOverTime : Effect {
 
 		//Skill type, self target or enemy target.
+
 	Skill simpleSkill;
 	int apWhenActivated;
 
+	new int round = 3;
+
 	public WeakDamageOverTime(Skill skill) {
-		selfTar = skill.selfTar;
+		name = "Weak Damage Over Time";
+		effectFromSkill = skill.name;
 		simpleSkill = new SimpleSkill ("Damage Over Time", true, skill.type, skill.APMult * 0.15F, true);
 	}
 
 	public override void AddToSkill(Skill skill) {
-		selfTar = skill.selfTar;
+		effectFromSkill = skill.name;
 		simpleSkill = new SimpleSkill ("Damage Over Time", true, skill.type, skill.APMult * 0.15F, true);
 	}
 
 	public override void ActivateEffect(Player player, Enemy enemy, PCNPC whoUsedIt) {
 		if (whoUsedIt == PCNPC.NPC) {
+			player.AddEffect (this);
 			apWhenActivated = enemy.AP;
-			player.effects.Add (this);
 		} else {
+			enemy.AddEffect (this);
 			apWhenActivated = player.AP;
-			enemy.effects.Add (this);
 		}
 	}
 
@@ -38,9 +42,18 @@ public class WeakDamageOverTime : Effect {
 
 	public override void DeactivateEffect(Player player, Enemy enemy, PCNPC whoUsedIt) {
 		if (whoUsedIt == PCNPC.NPC) {
-			enemy.effects.Remove (this);
+			enemy.RemoveEffect (this);
 		} else {
-			player.effects.Remove (this);
+			player.RemoveEffect (this);
+		}
+		round = 3;
+	}
+
+	public override void ResetEffect (Player player, Enemy enemy, PCNPC whoUsedIt) {
+		if (whoUsedIt == PCNPC.NPC) {
+			apWhenActivated = enemy.AP;
+		} else {
+			apWhenActivated = player.AP;
 		}
 		round = 3;
 	}
@@ -50,5 +63,5 @@ public class WeakDamageOverTime : Effect {
 			return false;
 		}
 		return true;
-	}
+	}	 
 }

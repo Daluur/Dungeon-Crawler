@@ -2,22 +2,39 @@
 using System.Collections;
 
 public class IncreaseDamageTaken : Effect {
-	
-	public override void AddToSkill(Skill skill) {
+
+	new public string name = "Increase Damage Taken";
+	bool selfTar;
+
+	new int round = 1;
+
+	public IncreaseDamageTaken(Skill skill) {
+		effectFromSkill = skill.name;
 		selfTar = skill.selfTar;
 	}
 
-	public void UpdateTimeLeft() {
-		round--;
+	public override void AddToSkill(Skill skill) {
+		effectFromSkill = skill.name;
+		selfTar = skill.selfTar;
 	}
 
-	public override void ActivateEffect(Player player, Enemy enemy, PCNPC whoCastIt) {
-		if (enemy == null) {
-			player.effects.Add (this);
-			player.damageIncrease = 50.0F;
+	public override void ActivateEffect(Player player, Enemy enemy, PCNPC whoUsedIt) {
+		if (selfTar) {
+			if (whoUsedIt == PCNPC.NPC) {
+				enemy.AddEffect (this);
+				enemy.damageIncrease = 50.0F;
+			} else {
+				player.AddEffect (this);
+				player.damageIncrease = 50.0F;
+			}
 		} else {
-			enemy.effects.Add (this);
-			enemy.damageIncrease = 50.0F;
+			if (whoUsedIt == PCNPC.NPC) {
+				player.AddEffect (this);
+				player.damageIncrease = 50.0F;
+			} else {
+				enemy.AddEffect (this);
+				enemy.damageIncrease = 50.0F;
+			}
 		}
 	}
 
@@ -27,14 +44,18 @@ public class IncreaseDamageTaken : Effect {
 	}
 
 	public override void DeactivateEffect(Player player, Enemy enemy, PCNPC whoUsedIt) {
-		if (enemy == null) {
-			player.effects.Remove (this);
-			player.damageIncrease = 0.0F;
-		} else {
-			enemy.effects.Remove (this);
+		if (whoUsedIt == PCNPC.NPC) {
+			enemy.RemoveEffect (this);
 			enemy.damageIncrease = 0.0F;
+		} else {
+			player.RemoveEffect (this);
+			player.damageIncrease = 0.0F;
 		}
-		round = 3;
+		round = 1;
+	}
+
+	public override void ResetEffect (Player player, Enemy enemy, PCNPC whoUsedIt) {
+		round = 1;
 	}
 
 	public override bool IsOver () {
@@ -42,5 +63,5 @@ public class IncreaseDamageTaken : Effect {
 			return false;
 		}
 		return true;
-	}
+	} 
 }
