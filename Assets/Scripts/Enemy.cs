@@ -68,42 +68,11 @@ public class Enemy {
 		health -= (int)Math.Floor(dp.damage);
 		Debug.Log ("Enemy took: " + dp.damage + " damage");
 		//Update Healthbar
-<<<<<<< HEAD
-		CombatText._instance.EnemyTakesDamage(dp.damage, false, false, "Damage", health);
-		//VisualController._instance.UpdateEnemyHealthbar(health);
+		CombatText._instance.EnemyTakesDamage((int)Math.Floor(dp.damage), false, false, "Damage", health);
 		Debug.Log ("Enemy took: " + dp.damage + " damage");
-		if (health <= 0) {
-			Player._instance.addGold (level);
-			return true;
-		}
-		return false;
-	}
-
-	public bool TakeDoTDamage(){
-		List<DamagePackage> toRemove = new List<DamagePackage> ();
-		foreach (DamagePackage DoT in DoTS) {
-			if (DoT.rounds > 0) {
-				health -= DoT.damage;
-				//Update Healthbar
-				CombatText._instance.EnemyTakesDamage(DoT.OTDamage, false, false, "DOT", health);
-				//VisualController._instance.UpdateEnemyHealthbar (health);
-				Debug.Log ("Enemy took: " + DoT.OTDamage + " damage, from DoT");
-				DoT.updateTimeLeft();
-			} else {
-				toRemove.Add (DoT);
-			}
-		}
-		foreach (DamagePackage DoT in toRemove) {
-			DoTS.Remove (DoT);
-		}
-		if (health <= 0) {
-			Player._instance.addGold (level);
-=======
-		VisualController._instance.UpdateEnemyHealthbar(health);
 		if (health <= 0) {
 			Player._instance.AddGold (level);
 			Player._instance.AddExperience (level);
->>>>>>> refs/remotes/origin/TheQuibbler
 			return true;
 		}
 		return false;
@@ -117,34 +86,7 @@ public class Enemy {
 		health += (int)Math.Floor(hp.damage);
 		Debug.Log ("Enemy recieved: " + hp.damage + " health");
 		//Update Healthbar
-<<<<<<< HEAD
-		CombatText._instance.EnemyTakesDamage(hp.damage, false, true, "Heal", health);
-		//VisualController._instance.UpdateEnemyHealthbar (health);
-		Debug.Log ("Enemy recieved: " + hp.damage + " health");
-	}
-		
-	public bool HealHoT(){
-		List<DamagePackage> toRemove = new List<DamagePackage> ();
-		foreach (DamagePackage HoT in HoTS) {
-			if (HoT.rounds > 0) {
-				health += HoT.damage;
-				//Update Healthbar
-				CombatText._instance.EnemyTakesDamage(HoT.damage, false, true, "HOT", health);
-				//VisualController._instance.UpdateEnemyHealthbar (health);
-				Debug.Log ("Enemy recieved: " + HoT.OTDamage + " health, from HoT");
-				HoT.updateTimeLeft();
-			} else {
-				toRemove.Add (HoT);
-			}
-		}
-		foreach (DamagePackage HoT in toRemove) {
-			HoTS.Remove (HoT);
-		}
-		if (health <= 0) {
-			Player._instance.addGold (level);
-			return true;
-=======
-		VisualController._instance.UpdateEnemyHealthbar (health);
+		CombatText._instance.EnemyTakesDamage((int)Math.Floor(hp.damage), false, true, "Heal", health);
 	}
 
 	/// <summary>
@@ -160,7 +102,6 @@ public class Enemy {
 		else { // Damage
 			Debug.Log ("Effect " + ability.name + "!");
 			CombatController._instance.EffectAttackEnemy (ability.CalDmg (tempAP, critChance));
->>>>>>> refs/remotes/origin/TheQuibbler
 		}
 	}
 
@@ -173,7 +114,8 @@ public class Enemy {
 		RunEffects ();
 		if (isStun) {
 			Debug.Log ("Enemy is Stunned");
-			Player._instance.MyTurn ();
+			CombatController._instance.TryEndTurn ();
+			//Player._instance.MyTurn ();
 		} else {
 			UseAttack ();
 		}

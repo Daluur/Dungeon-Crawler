@@ -51,7 +51,7 @@ public class CombatController : MonoBehaviour {
 			currentDungeon.NextEncounter ();
 		} else {
 			//Says it is the enemies turn.
-			currentEnemy.MyTurn (); 
+			TryEndTurn();
 		}
 	}
 
@@ -65,24 +65,7 @@ public class CombatController : MonoBehaviour {
 			VisualController._instance.RemoveEnemyVisual ();
 			currentDungeon.NextEncounter ();
 		} else {
-<<<<<<< HEAD
-			currentEnemy.HealHoT ();
-			if (currentEnemy.TakeDoTDamage ()) {
-				Debug.Log ("Enemey Died!");
-				VisualController._instance.RemoveEnemyVisual ();
-				currentDungeon.NextEncounter ();
-			} else {
-				if (dp.isOT) {
-					currentEnemy.addDoT (dp);
-				}
-				//Says it is the enemies turn.
-				//CombatText._instance.ShowInfo("Enemies turn!");
-				TryEndTurn();
-				//currentEnemy.MyTurn ();
-			}
-=======
-			//Says it is the enemies turn.
-			player.MyTurn (); 
+			TryEndTurn();
 		}
 	}
 
@@ -95,7 +78,6 @@ public class CombatController : MonoBehaviour {
 			Debug.Log ("Enemey Died!");
 			VisualController._instance.RemoveEnemyVisual ();
 			currentDungeon.NextEncounter ();
->>>>>>> refs/remotes/origin/TheQuibbler
 		}
 	}
 
@@ -106,7 +88,7 @@ public class CombatController : MonoBehaviour {
 	public void HealEnemy(DamagePackage hp){
 		currentEnemy.HealUp (ref hp);
 		//Says it is the players turn.
-		player.MyTurn ();
+		TryEndTurn();
 	}
 
 	/// <summary>
@@ -125,9 +107,7 @@ public class CombatController : MonoBehaviour {
 		if (player.TakeDamage (ref dp)) {
 			Debug.Log ("Player died!");
 		} else {
-
 			TryEndTurn ();
-			//player.MyTurn ();
 		}
 	}
 
@@ -139,22 +119,8 @@ public class CombatController : MonoBehaviour {
 		if (player.TakeDamage (ref dp)) {
 			Debug.Log ("Player died!");
 		} else {
-<<<<<<< HEAD
-			player.HealHoT ();
-			if (player.TakeDoTDamage ()) {
-				Debug.Log ("Player died!");
-			} else {
-				if (dp.isOT) {
-					player.addDoT (dp);
-				}
-				//Says it is the players turn.
-				//CombatText._instance.ShowInfo("Your turn!");
-				TryEndTurn();
-				//player.MyTurn ();
-			}
-=======
 			//Says it is the players turn.
-			currentEnemy.MyTurn ();
+			TryEndTurn();
 		}
 	}
 
@@ -165,7 +131,6 @@ public class CombatController : MonoBehaviour {
 	public void EffectAttackPlayer(DamagePackage dp) {
 		if (player.TakeDamage (ref dp)) {
 			Debug.Log ("Player died!");
->>>>>>> refs/remotes/origin/TheQuibbler
 		}
 	}
 
@@ -174,26 +139,9 @@ public class CombatController : MonoBehaviour {
 	/// </summary>
 	/// <param name="hp">Hp.</param>
 	public void HealPlayer(DamagePackage hp){
-<<<<<<< HEAD
-		player.HealUp (hp);
-		player.HealHoT ();
-		if (hp.isOT) {
-			player.addHoT (hp);
-		}
-		if (currentEnemy.TakeDoTDamage ()) {
-			Debug.Log ("Enemy died!");
-			VisualController._instance.RemoveEnemyVisual ();
-			currentDungeon.NextEncounter ();
-		} else {
-			TryEndTurn ();
-			//currentEnemy.MyTurn ();
-		}
-=======
 		player.HealUp (ref hp);
-
 		//Says it is the enemies turn.
-		currentEnemy.MyTurn ();
->>>>>>> refs/remotes/origin/TheQuibbler
+		TryEndTurn();
 	}
 
 	/// <summary>
@@ -225,7 +173,7 @@ public class CombatController : MonoBehaviour {
 	/// <summary>
 	/// Tries to end turn, if animations are playing, it can't.
 	/// </summary>
-	void TryEndTurn(){
+	public void TryEndTurn(){
 		if (CombatText._instance.IsPlayingAnimation ()) {
 			waitingToFinishAnimations = true;
 		} else {
@@ -249,7 +197,6 @@ public class CombatController : MonoBehaviour {
 		//If it were waiting for animations, end the turn.
 		if (waitingToFinishAnimations) {
 			waitingToFinishAnimations = false;
-			//Invoke("TryEndTurn",1f);
 			TryEndTurn();
 		}
 	}

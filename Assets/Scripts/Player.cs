@@ -141,26 +141,14 @@ public class Player : MonoBehaviour {
 		health -= (int)Math.Floor(dp.damage);
 		Debug.Log ("Player took: " + dp.damage + " damage");
 		//Updates the healthbar
-		CombatText._instance.PlayerTakesDamage(dp.damage, false, false, "Damage", health);
+		CombatText._instance.PlayerTakesDamage((int)Math.Floor(dp.damage), false, false, "Damage", health);
 		//VisualController._instance.UpdatePlayerHealthbar (health);
 		if (health <= 0) {
 			return true;
 		}
 		return false;
 	}
-
-<<<<<<< HEAD
-	public bool TakeDoTDamage(){
-		List<DamagePackage> toRemove = new List<DamagePackage> ();
-		foreach (DamagePackage DoT in DoTS) {
-			if (DoT.rounds > 0) {
-				health -= DoT.damage;
-				//Update Healthbar
-				CombatText._instance.PlayerTakesDamage(DoT.OTDamage, false, false, "DOT", health);
-				//VisualController._instance.UpdatePlayerHealthbar (health);
-				Debug.Log ("Player took: " + DoT.OTDamage + " damage, from DoT");
-				DoT.updateTimeLeft();
-=======
+		
 	/// <summary>
 	/// Heals the Player
 	/// </summary>
@@ -169,7 +157,7 @@ public class Player : MonoBehaviour {
 		health += (int)Math.Floor(hp.damage);
 		Debug.Log ("Player recieved: " + hp.damage + " health");
 		//Updates the healthbar
-		VisualController._instance.UpdatePlayerHealthbar (health);
+		CombatText._instance.PlayerTakesDamage((int)Math.Floor(hp.damage), false, false, "Damage", health);
 	}
 
 	/// <summary>
@@ -180,7 +168,6 @@ public class Player : MonoBehaviour {
 		if (myTurn) {
 			if (ability.IsOnCD ()) {
 				Debug.Log (ability.name + " is on Cooldown");
->>>>>>> refs/remotes/origin/TheQuibbler
 			} else {
 				myTurn = false;
 				Debug.Log ("Player used " + ability.name + "!");
@@ -206,27 +193,6 @@ public class Player : MonoBehaviour {
 	/// <summary>
 	/// Uses effect.
 	/// </summary>
-<<<<<<< HEAD
-	/// <param name="hp">Hp.</param>
-	public void HealUp(DamagePackage hp){
-		health += hp.damage;
-		//Updates the healthbar
-		CombatText._instance.PlayerTakesDamage(hp.damage, false, true, "Heal", health);
-		//VisualController._instance.UpdatePlayerHealthbar (health);
-		Debug.Log ("Player recieved: " + hp.damage + " health");
-	}
-
-	public bool HealHoT(){
-		List<DamagePackage> toRemove = new List<DamagePackage> ();
-		foreach (DamagePackage HoT in HoTS) {
-			if (HoT.rounds > 0) {
-				health += HoT.damage;
-				//Update Healthbar
-				CombatText._instance.PlayerTakesDamage(HoT.damage, false, true, "HOT", health);
-				//VisualController._instance.UpdatePlayerHealthbar (health);
-				Debug.Log ("Player recieved: " + HoT.OTDamage + " health, from HoT");
-				HoT.updateTimeLeft();
-=======
 	/// <param name="ability">Ability</param>
 	/// <param name="tempAP">Temporary AP</param>
 	public void UseEffect(Skill ability, int tempAP) {
@@ -264,7 +230,6 @@ public class Player : MonoBehaviour {
 		foreach (Effect eff in effects) {
 			if (eff.IsOver ()) {
 				toRemove.Add (eff);
->>>>>>> refs/remotes/origin/TheQuibbler
 			} else {
 				eff.DoStuff (this, CC.currentEnemy, PCNPC.PC);
 			}
@@ -291,22 +256,8 @@ public class Player : MonoBehaviour {
 					}
 				}
 			}
-<<<<<<< HEAD
-			else { // Damage
-				if (ability.onCD ()) {
-					Debug.Log (ability.name + " is on Cooldown");
-					CombatText._instance.ShowInfo (ability.name + " is on cooldown!", InfoType.Error);
-				} else {
-					myTurn = false;
-					Debug.Log ("Player used " + ability.name + "!");
-					CombatController._instance.AttackEnemy (ability.CalDmg (AP));
-					updateCD ();
-					ability.setCD ();
-				}
-=======
 			if (!nameMatch) {
 				effects.Add (eff);
->>>>>>> refs/remotes/origin/TheQuibbler
 			}
 		}
 	}
