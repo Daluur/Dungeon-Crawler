@@ -248,8 +248,10 @@ public class Player : MonoBehaviour {
 		} else {
 			bool nameMatch = false;
 			for (int i = 0; i < effects.Count; i++) {
+				Debug.Log ("1: " + eff.name + " 2: " + effects [i].name);
 				if(eff.name == effects[i].name) {
 					nameMatch = true;
+					Debug.Log ("1: " + eff.effectFromSkill + " 2: " + effects [i].effectFromSkill);
 					if (eff.effectFromSkill == effects [i].effectFromSkill) {
 						effects [i].ResetEffect (this, CC.currentEnemy, PCNPC.PC);
 					}

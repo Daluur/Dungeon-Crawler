@@ -3,12 +3,12 @@ using System.Collections;
 
 public class IncreaseDamageTaken : Effect {
 
-	new public string name = "Increase Damage Taken";
 	bool selfTar;
 
 	new int round = 1;
 
 	public IncreaseDamageTaken(Skill skill) {
+		name = "Increase Damage Taken";
 		effectFromSkill = skill.name;
 		selfTar = skill.selfTar;
 	}

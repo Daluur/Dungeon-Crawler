@@ -175,10 +175,14 @@ public class Enemy {
 		} else {
 			bool nameMatch = false;
 			for (int i = 0; i < effects.Count; i++) {
+				Debug.Log ("1: " + eff.name + " 2: " + effects [i].name);
 				if(eff.name == effects[i].name) {
 					nameMatch = true;
+					Debug.Log ("1: " + eff.effectFromSkill + " 2: " + effects [i].effectFromSkill);
 					if (eff.effectFromSkill == effects [i].effectFromSkill) {
 						effects [i].ResetEffect (Player._instance, this, PCNPC.NPC);
+					} else {
+						effects.Add (eff);
 					}
 				}
 			}
