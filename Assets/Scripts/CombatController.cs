@@ -36,6 +36,7 @@ public class CombatController : MonoBehaviour {
 	public void NewEnemy(Enemy newE){
 		currentEnemy = newE;
 		Debug.Log ("A new Enemy as appeared");
+		CombatText._instance.ShowInfo ("Your turn", InfoType.Unskippable);
 		player.MyTurn ();
 	}
 
@@ -146,26 +147,35 @@ public class CombatController : MonoBehaviour {
 		VisualController._instance.ShowNextEncounterButton ();
 	}
 
+	/// <summary>
+	/// Tries to end turn, if animations are playing, it can't.
+	/// </summary>
 	void TryEndTurn(){
 		if (CombatText._instance.IsPlayingAnimation ()) {
 			waitingToFinishAnimations = true;
 		} else {
 			if (playersTurn) {
 				//Says it is the enemies turn.
-				CombatText._instance.ShowInfo("Enemies turn!");
+				CombatText._instance.ShowInfo("Enemies turn!",InfoType.Unskippable);
 				currentEnemy.MyTurn ();
 			} else {
 				//Says it is the players turn.
-				CombatText._instance.ShowInfo("Your turn!");
+				CombatText._instance.ShowInfo("Your turn!",InfoType.Unskippable);
 				player.MyTurn ();
 			}
 			playersTurn = !playersTurn;
 		}
 	}
 
+	/// <summary>
+	/// Animations are finished.
+	/// </summary>
 	public void FinishedAnimations(){
+		//If it were waiting for animations, end the turn.
 		if (waitingToFinishAnimations) {
-			Invoke("TryEndTurn",2f);
+			waitingToFinishAnimations = false;
+			//Invoke("TryEndTurn",1f);
+			TryEndTurn();
 		}
 	}
 }

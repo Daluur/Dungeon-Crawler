@@ -167,6 +167,7 @@ public class Player : MonoBehaviour {
 			else { // Damage
 				if (ability.onCD ()) {
 					Debug.Log (ability.name + " is on Cooldown");
+					CombatText._instance.ShowInfo (ability.name + " is on cooldown!", InfoType.Error);
 				} else {
 					myTurn = false;
 					Debug.Log ("Player used " + ability.name + "!");
