@@ -239,7 +239,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 825686400}
-        m_MethodName: attack3
+        m_MethodName: Attack3
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1375,35 +1375,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98631127832a76844893a05cd8f89bd1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  level: 0
+  experience: 0
+  XPforLevel: 0
+  health: 5000
+  AP: 0
+  damageIncrease: 0
+  additionalReductions: 0
+  isMultiRoundAttack: 0
   gold: 0
-  abilties:
-  - name: Mega Punch
-    selfTar: 0
-    type: 1
-    APMult: 1
-    CD: 0
-    CDduration: 0
-    hasOT: 0
-    rounds: 0
-    APMultPerRound: 0
-  - name: Fireball
-    selfTar: 0
-    type: 3
-    APMult: 2
-    CD: 1
-    CDduration: 0
-    hasOT: 1
-    rounds: 3
-    APMultPerRound: 1
-  - name: Holy Hand
-    selfTar: 1
-    type: 1
-    APMult: 2
-    CD: 2
-    CDduration: 0
-    hasOT: 0
-    rounds: 0
-    APMultPerRound: 0
 --- !u!4 &825686401
 Transform:
   m_ObjectHideFlags: 0
@@ -1570,7 +1550,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 825686400}
-        m_MethodName: attack1
+        m_MethodName: Attack1
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2644,7 +2624,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 825686400}
-        m_MethodName: attack2
+        m_MethodName: Attack2
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

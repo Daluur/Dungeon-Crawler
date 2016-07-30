@@ -9,7 +9,7 @@ public class CombatController : MonoBehaviour {
 	public static CombatController _instance;
 
 	Dungeon currentDungeon;
-	Enemy currentEnemy;
+	public Enemy currentEnemy;
 	public Player player;
 	bool playersTurn = true;
 	bool waitingToFinishAnimations = false;
@@ -45,12 +45,27 @@ public class CombatController : MonoBehaviour {
 	/// </summary>
 	/// <param name="dp">Dp.</param>
 	public void AttackEnemy(DamagePackage dp){
-		if (currentEnemy.TakeDamage (dp)) {
+		if (currentEnemy.TakeDamage (ref dp)) {
 			Debug.Log ("Enemey Died!");
 			VisualController._instance.RemoveEnemyVisual ();
-			//Shows the loot button.
-			VisualController._instance.ShowLootButton ();
+			currentDungeon.NextEncounter ();
 		} else {
+			//Says it is the enemies turn.
+			currentEnemy.MyTurn (); 
+		}
+	}
+
+	/// <summary>
+	/// Enemy attacks itself.
+	/// </summary>
+	/// <param name="dp">Dp.</param>
+	public void EnemySelfDamage(DamagePackage dp){
+		if (currentEnemy.TakeDamage (ref dp)) {
+			Debug.Log ("Enemey Died!");
+			VisualController._instance.RemoveEnemyVisual ();
+			currentDungeon.NextEncounter ();
+		} else {
+<<<<<<< HEAD
 			currentEnemy.HealHoT ();
 			if (currentEnemy.TakeDoTDamage ()) {
 				Debug.Log ("Enemey Died!");
@@ -65,6 +80,22 @@ public class CombatController : MonoBehaviour {
 				TryEndTurn();
 				//currentEnemy.MyTurn ();
 			}
+=======
+			//Says it is the enemies turn.
+			player.MyTurn (); 
+		}
+	}
+
+	/// <summary>
+	/// Effect attack on Enemy.
+	/// </summary>
+	/// <param name="dp">Dp.</param>
+	public void EffectAttackEnemy(DamagePackage dp){
+		if (currentEnemy.TakeDamage (ref dp)) {
+			Debug.Log ("Enemey Died!");
+			VisualController._instance.RemoveEnemyVisual ();
+			currentDungeon.NextEncounter ();
+>>>>>>> refs/remotes/origin/TheQuibbler
 		}
 	}
 
@@ -73,12 +104,25 @@ public class CombatController : MonoBehaviour {
 	/// </summary>
 	/// <param name="hp">Hp.</param>
 	public void HealEnemy(DamagePackage hp){
-		currentEnemy.HealUp (hp);
-		currentEnemy.HealHoT ();
-		if (hp.isOT) {
-			currentEnemy.addHoT (hp);
-		}
-		if (player.TakeDoTDamage ()) {
+		currentEnemy.HealUp (ref hp);
+		//Says it is the players turn.
+		player.MyTurn ();
+	}
+
+	/// <summary>
+	/// Effect heal on Enemy
+	/// </summary>
+	/// <param name="hp">Hp.</param>
+	public void EffectHealEnemy(DamagePackage hp){
+		currentEnemy.HealUp (ref hp);
+	}
+
+	/// <summary>
+	/// Attacks the Player.
+	/// </summary>
+	/// <param name="dp">Dp.</param>
+	public void AttackPlayer(DamagePackage dp){
+		if (player.TakeDamage (ref dp)) {
 			Debug.Log ("Player died!");
 		} else {
 
@@ -88,13 +132,14 @@ public class CombatController : MonoBehaviour {
 	}
 
 	/// <summary>
-	/// Attacks the Player.
+	/// Player attacks itself
 	/// </summary>
 	/// <param name="dp">Dp.</param>
-	public void AttackPlayer(DamagePackage dp){
-		if (player.TakeDamage (dp)) {
+	public void PlayerSelfDamage(DamagePackage dp){
+		if (player.TakeDamage (ref dp)) {
 			Debug.Log ("Player died!");
 		} else {
+<<<<<<< HEAD
 			player.HealHoT ();
 			if (player.TakeDoTDamage ()) {
 				Debug.Log ("Player died!");
@@ -107,6 +152,20 @@ public class CombatController : MonoBehaviour {
 				TryEndTurn();
 				//player.MyTurn ();
 			}
+=======
+			//Says it is the players turn.
+			currentEnemy.MyTurn ();
+		}
+	}
+
+	/// <summary>
+	/// Effect attack on player
+	/// </summary>
+	/// <param name="dp">Dp.</param>
+	public void EffectAttackPlayer(DamagePackage dp) {
+		if (player.TakeDamage (ref dp)) {
+			Debug.Log ("Player died!");
+>>>>>>> refs/remotes/origin/TheQuibbler
 		}
 	}
 
@@ -115,6 +174,7 @@ public class CombatController : MonoBehaviour {
 	/// </summary>
 	/// <param name="hp">Hp.</param>
 	public void HealPlayer(DamagePackage hp){
+<<<<<<< HEAD
 		player.HealUp (hp);
 		player.HealHoT ();
 		if (hp.isOT) {
@@ -128,7 +188,22 @@ public class CombatController : MonoBehaviour {
 			TryEndTurn ();
 			//currentEnemy.MyTurn ();
 		}
+=======
+		player.HealUp (ref hp);
+
+		//Says it is the enemies turn.
+		currentEnemy.MyTurn ();
+>>>>>>> refs/remotes/origin/TheQuibbler
 	}
+
+	/// <summary>
+	/// Effect heal on player
+	/// </summary>
+	/// <param name="hp">Hp.</param>
+	public void EffectHealPlayer(DamagePackage hp){
+		player.HealUp (ref hp);
+	}
+
 
 	/// <summary>
 	/// Starts the next encounter.
