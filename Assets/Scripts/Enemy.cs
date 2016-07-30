@@ -68,8 +68,7 @@ public class Enemy {
 		health -= (int)Math.Floor(dp.damage);
 		Debug.Log ("Enemy took: " + dp.damage + " damage");
 		//Update Healthbar
-		CombatText._instance.EnemyTakesDamage((int)Math.Floor(dp.damage), false, false, "Damage", health);
-		Debug.Log ("Enemy took: " + dp.damage + " damage");
+		CombatText._instance.EnemyTakesDamage((int)Math.Floor(dp.damage), dp.isCrit, false, dp.name, health);
 		if (health <= 0) {
 			Player._instance.AddGold (level);
 			Player._instance.AddExperience (level);
@@ -86,7 +85,7 @@ public class Enemy {
 		health += (int)Math.Floor(hp.damage);
 		Debug.Log ("Enemy recieved: " + hp.damage + " health");
 		//Update Healthbar
-		CombatText._instance.EnemyTakesDamage((int)Math.Floor(hp.damage), false, true, "Heal", health);
+		CombatText._instance.EnemyTakesDamage((int)Math.Floor(hp.damage), hp.isCrit, true, hp.name, health);
 	}
 
 	/// <summary>
@@ -114,8 +113,8 @@ public class Enemy {
 		RunEffects ();
 		if (isStun) {
 			Debug.Log ("Enemy is Stunned");
+			CombatText._instance.ShowInfo ("Enemy is stunned!", InfoType.Unskippable);
 			CombatController._instance.TryEndTurn ();
-			//Player._instance.MyTurn ();
 		} else {
 			UseAttack ();
 		}
@@ -181,6 +180,8 @@ public class Enemy {
 					nameMatch = true;
 					if (eff.effectFromSkill == effects [i].effectFromSkill) {
 						effects [i].ResetEffect (Player._instance, this, PCNPC.NPC);
+					} else {
+						effects.Add (eff);
 					}
 				}
 			}

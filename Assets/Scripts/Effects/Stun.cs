@@ -3,12 +3,12 @@ using System.Collections;
 
 public class Stun : Effect {
 
-	new public string name = "Stun";
 	bool selfTar;
 
 	new int round = 1;
 
 	public Stun(Skill skill) {
+		name = "Stun";
 		effectFromSkill = skill.name;
 		selfTar = skill.selfTar;
 	}

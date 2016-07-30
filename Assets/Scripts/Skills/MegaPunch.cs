@@ -17,9 +17,9 @@ public class MegaPunch : Skill {
 	public override DamagePackage CalDmg(int AP, float critChance){
 		System.Random rnd = new System.Random();
 		if (rnd.Next (0, 100) < critChance) {
-			return new DamagePackage (type, (AP * APMult) * 2);
+			return new DamagePackage (type, (AP * APMult) * 2, name, true);
 		}
-		return new DamagePackage (type, AP * APMult);
+		return new DamagePackage (type, AP * APMult, name, false);
 	}
 
 	public override void AddEffect(Effect newEffect) {

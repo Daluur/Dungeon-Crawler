@@ -141,7 +141,7 @@ public class Player : MonoBehaviour {
 		health -= (int)Math.Floor(dp.damage);
 		Debug.Log ("Player took: " + dp.damage + " damage");
 		//Updates the healthbar
-		CombatText._instance.PlayerTakesDamage((int)Math.Floor(dp.damage), false, false, "Damage", health);
+		CombatText._instance.PlayerTakesDamage((int)Math.Floor(dp.damage), dp.isCrit, false, dp.name, health);
 		//VisualController._instance.UpdatePlayerHealthbar (health);
 		if (health <= 0) {
 			return true;
@@ -157,7 +157,7 @@ public class Player : MonoBehaviour {
 		health += (int)Math.Floor(hp.damage);
 		Debug.Log ("Player recieved: " + hp.damage + " health");
 		//Updates the healthbar
-		CombatText._instance.PlayerTakesDamage((int)Math.Floor(hp.damage), false, false, "Damage", health);
+		CombatText._instance.PlayerTakesDamage((int)Math.Floor(hp.damage), hp.isCrit, true, hp.name, health);
 	}
 
 	/// <summary>
@@ -216,7 +216,8 @@ public class Player : MonoBehaviour {
 		RunEffects ();
 		if (isStun) {
 			Debug.Log ("Player is Stunned");
-			CC.currentEnemy.MyTurn ();
+			CombatText._instance.ShowInfo ("You are stunned!", InfoType.Unskippable);
+			CC.TryEndTurn ();
 		} else {
 			myTurn = true;
 		}
@@ -253,6 +254,8 @@ public class Player : MonoBehaviour {
 					nameMatch = true;
 					if (eff.effectFromSkill == effects [i].effectFromSkill) {
 						effects [i].ResetEffect (this, CC.currentEnemy, PCNPC.PC);
+					} else {
+						effects.Add (eff);
 					}
 				}
 			}

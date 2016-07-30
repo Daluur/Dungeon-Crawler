@@ -10,10 +10,22 @@ public class DamagePackage {
 	public ElementalType type;
 	//The damage.
 	public float damage;
+	//The name
+	public string name;
+	//Is crit?
+	public bool isCrit;
 
 	public DamagePackage(ElementalType newType, float newDamage){
+		Debug.Log("You should not use this constructor, include name and crit");
 		type = newType;
 		damage = newDamage;
+	}
+
+	public DamagePackage(ElementalType newType, float newDamage, string nName, bool crit){
+		type = newType;
+		damage = newDamage;
+		name = nName;
+		isCrit = crit;
 	}
 
 	public void DamageReduction(float reduction) { 
