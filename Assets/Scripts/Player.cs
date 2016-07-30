@@ -82,7 +82,8 @@ public class Player : MonoBehaviour {
 		health -= dp.damage;
 		Debug.Log ("Player took: " + dp.damage + " damage");
 		//Updates the healthbar
-		VisualController._instance.UpdatePlayerHealthbar (health);
+		CombatText._instance.PlayerTakesDamage(dp.damage, false, false, "Damage", health);
+		//VisualController._instance.UpdatePlayerHealthbar (health);
 		if (health <= 0) {
 			return true;
 		}
@@ -95,7 +96,8 @@ public class Player : MonoBehaviour {
 			if (DoT.rounds > 0) {
 				health -= DoT.damage;
 				//Update Healthbar
-				VisualController._instance.UpdatePlayerHealthbar (health);
+				CombatText._instance.PlayerTakesDamage(DoT.OTDamage, false, false, "DOT", health);
+				//VisualController._instance.UpdatePlayerHealthbar (health);
 				Debug.Log ("Player took: " + DoT.OTDamage + " damage, from DoT");
 				DoT.updateTimeLeft();
 			} else {
@@ -118,7 +120,8 @@ public class Player : MonoBehaviour {
 	public void HealUp(DamagePackage hp){
 		health += hp.damage;
 		//Updates the healthbar
-		VisualController._instance.UpdatePlayerHealthbar (health);
+		CombatText._instance.PlayerTakesDamage(hp.damage, false, true, "Heal", health);
+		//VisualController._instance.UpdatePlayerHealthbar (health);
 		Debug.Log ("Player recieved: " + hp.damage + " health");
 	}
 
@@ -128,7 +131,8 @@ public class Player : MonoBehaviour {
 			if (HoT.rounds > 0) {
 				health += HoT.damage;
 				//Update Healthbar
-				VisualController._instance.UpdatePlayerHealthbar (health);
+				CombatText._instance.PlayerTakesDamage(HoT.damage, false, true, "HOT", health);
+				//VisualController._instance.UpdatePlayerHealthbar (health);
 				Debug.Log ("Player recieved: " + HoT.OTDamage + " health, from HoT");
 				HoT.updateTimeLeft();
 			} else {
@@ -163,6 +167,7 @@ public class Player : MonoBehaviour {
 			else { // Damage
 				if (ability.onCD ()) {
 					Debug.Log (ability.name + " is on Cooldown");
+					CombatText._instance.ShowInfo (ability.name + " is on cooldown!", InfoType.Error);
 				} else {
 					myTurn = false;
 					Debug.Log ("Player used " + ability.name + "!");

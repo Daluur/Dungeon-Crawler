@@ -45,7 +45,8 @@ public class Enemy {
 	public bool TakeDamage(DamagePackage dp){
 		health -= dp.damage;
 		//Update Healthbar
-		VisualController._instance.UpdateEnemyHealthbar(health);
+		CombatText._instance.EnemyTakesDamage(dp.damage, false, false, "Damage", health);
+		//VisualController._instance.UpdateEnemyHealthbar(health);
 		Debug.Log ("Enemy took: " + dp.damage + " damage");
 		if (health <= 0) {
 			Player._instance.addGold (level);
@@ -60,7 +61,8 @@ public class Enemy {
 			if (DoT.rounds > 0) {
 				health -= DoT.damage;
 				//Update Healthbar
-				VisualController._instance.UpdateEnemyHealthbar (health);
+				CombatText._instance.EnemyTakesDamage(DoT.OTDamage, false, false, "DOT", health);
+				//VisualController._instance.UpdateEnemyHealthbar (health);
 				Debug.Log ("Enemy took: " + DoT.OTDamage + " damage, from DoT");
 				DoT.updateTimeLeft();
 			} else {
@@ -84,7 +86,8 @@ public class Enemy {
 	public void HealUp(DamagePackage hp){
 		health += hp.damage;
 		//Update Healthbar
-		VisualController._instance.UpdateEnemyHealthbar (health);
+		CombatText._instance.EnemyTakesDamage(hp.damage, false, true, "Heal", health);
+		//VisualController._instance.UpdateEnemyHealthbar (health);
 		Debug.Log ("Enemy recieved: " + hp.damage + " health");
 	}
 		
@@ -94,7 +97,8 @@ public class Enemy {
 			if (HoT.rounds > 0) {
 				health += HoT.damage;
 				//Update Healthbar
-				VisualController._instance.UpdateEnemyHealthbar (health);
+				CombatText._instance.EnemyTakesDamage(HoT.damage, false, true, "HOT", health);
+				//VisualController._instance.UpdateEnemyHealthbar (health);
 				Debug.Log ("Enemy recieved: " + HoT.OTDamage + " health, from HoT");
 				HoT.updateTimeLeft();
 			} else {
