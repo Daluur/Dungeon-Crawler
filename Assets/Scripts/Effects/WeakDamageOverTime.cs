@@ -7,6 +7,7 @@ public class WeakDamageOverTime : Effect {
 
 	Skill simpleSkill;
 	int apWhenActivated;
+	float critWhenActivated;
 
 	new int round = 3;
 
@@ -25,17 +26,20 @@ public class WeakDamageOverTime : Effect {
 		if (whoUsedIt == PCNPC.NPC) {
 			player.AddEffect (this);
 			apWhenActivated = enemy.AP;
+			critWhenActivated = enemy.critChance;
+
 		} else {
 			enemy.AddEffect (this);
 			apWhenActivated = player.AP;
+			critWhenActivated = player.critChance;
 		}
 	}
 
 	public override void DoStuff(Player player, Enemy enemy, PCNPC whoUsedIt) {
 		if (whoUsedIt == PCNPC.NPC) {
-			enemy.UseEffect (simpleSkill, apWhenActivated);
+			enemy.UseAttackEffect (simpleSkill, apWhenActivated, critWhenActivated);
 		} else {
-			player.UseEffect (simpleSkill, apWhenActivated);
+			player.UseAttackEffect (simpleSkill, apWhenActivated, critWhenActivated);
 		}
 		round--;
 	}

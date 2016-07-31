@@ -15,7 +15,7 @@ public class Enemy {
 	//Its attack power.
 	public int AP;
 
-	float critChance;
+	public float critChance;
 
 
 
@@ -93,15 +93,14 @@ public class Enemy {
 	/// </summary>
 	/// <param name="ability">Ability.</param>
 	/// <param name="tempAP">Temporary AP</param>
-	public void UseEffect(Skill ability, int tempAP) {
-		if (!ability.selfDam) { // Healing
-			Debug.Log ("Effect " + ability.name + "!");
-			CombatController._instance.EffectHealEnemy (ability.CalDmg (tempAP, critChance));
-		} 
-		else { // Damage
-			Debug.Log ("Effect " + ability.name + "!");
-			CombatController._instance.EffectAttackEnemy (ability.CalDmg (tempAP, critChance));
-		}
+	public void UseHealEffect(Skill ability) {
+		Debug.Log ("Effect " + ability.name + "!");
+		CombatController._instance.EffectHealEnemy (ability.CalDmg (AP, critChance));
+	}
+
+	public void UseAttackEffect(Skill ability, int tempAP, float tempCrit) {
+		Debug.Log ("Effect " + ability.name + "!");
+		CombatController._instance.EffectAttackEnemy (ability.CalDmg (tempAP, tempCrit));
 	}
 
 	/// <summary>
@@ -127,10 +126,11 @@ public class Enemy {
 	/// </summary>
 	void UseAttack() {
 		//TODO: Need simple AI to pick attacks.
-		Skill ability = abilties[2];
+		//Skill ability = abilties[2];
+		Skill ability = abilties [rnd.Next (0, 3)];
 
 		while (ability.IsOnCD ()) {
-			ability = abilties [rnd.Next (0, 2)];
+			ability = abilties [rnd.Next (0, 3)];
 		}
 		Debug.Log ("Enemy used " + ability.name + "!");
 

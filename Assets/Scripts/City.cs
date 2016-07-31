@@ -14,7 +14,7 @@ public class City : MonoBehaviour {
 
 	//TODO check if the player unlocked things from the dungeon etc. in order to decide if new things should be visible in the town.
 	public void EnterTown(){
-		//TODO fully heal the player.
+		Player._instance.HealToFull();
 	}
 
 	public void LeaveTown(){

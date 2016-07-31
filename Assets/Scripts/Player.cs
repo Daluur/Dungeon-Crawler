@@ -24,7 +24,7 @@ public class Player : MonoBehaviour {
 	int bonusAP;
 
 	//Players current crit
-	float critChance;
+	public float critChance;
 	int critRating;
 
 	// Player Damage reductions and increases
@@ -69,7 +69,7 @@ public class Player : MonoBehaviour {
 		}
 		CC = CombatController._instance;
 		AddAbilities ();
-		VisualController._instance.CreatePlayerHealthbar (health);
+		VisualController._instance.CreatePlayerHealthbar (maxHealth);
 	}
 
 	/// <summary>
@@ -86,7 +86,7 @@ public class Player : MonoBehaviour {
 		level = 1;
 		experience = 0;
 		XPforLevel = 250;
-		maxHealth = 300;
+		maxHealth = 3000;
 		health = maxHealth;
 		bonusHealth = 0;
 		AP = 40;
@@ -97,7 +97,7 @@ public class Player : MonoBehaviour {
 		armor = 0;
 		gold = 0;
 		rubies = 0;
-		VisualController._instance.CreatePlayerHealthbar (health);
+		VisualController._instance.CreatePlayerHealthbar (maxHealth);
 	}
 
 	/// <summary>
@@ -107,11 +107,19 @@ public class Player : MonoBehaviour {
 	public void AddExperience(int Enemylevel) {
 		experience += Enemylevel * 100;
 		if (XPforLevel < experience) {
-			level++;
-			experience -= XPforLevel;
-			XPforLevel *= 2;
+			DING ();
 		}
 	}	
+
+	public void DING() {
+		level++;
+		experience -= XPforLevel;
+		XPforLevel *= 2;
+		maxHealth += 300; //Whatever much health you get per level
+		health = maxHealth;
+		VisualController._instance.UpdatePlayerMaxHealth (maxHealth);
+		VisualController._instance.UpdatePlayerHealthbar (health);
+	}
 
 	/// <summary>
 	/// Adds gold.
@@ -160,6 +168,10 @@ public class Player : MonoBehaviour {
 		CombatText._instance.PlayerTakesDamage((int)Math.Floor(hp.damage), hp.isCrit, true, hp.name, health);
 	}
 
+	public void HealToFull() {
+		health = maxHealth;
+	}
+
 	/// <summary>
 	/// Uses ability.
 	/// </summary>
@@ -195,16 +207,15 @@ public class Player : MonoBehaviour {
 	/// </summary>
 	/// <param name="ability">Ability</param>
 	/// <param name="tempAP">Temporary AP</param>
-	public void UseEffect(Skill ability, int tempAP) {
-		if (!ability.selfDam) { // Healing
-			Debug.Log ("Effect " + ability.name + "!");
-			CombatController._instance.EffectHealPlayer (ability.CalDmg (AP, critChance));
-		} 
-		else { // Damage
-			Debug.Log ("Effect " + ability.name + "!");
-			CombatController._instance.EffectAttackPlayer (ability.CalDmg (tempAP, critChance));
-		}
-}
+	public void UseHealEffect(Skill ability) {
+		Debug.Log ("Effect " + ability.name + "!");
+		CombatController._instance.EffectHealPlayer (ability.CalDmg (AP, critChance));
+	}
+
+	public void UseAttackEffect(Skill ability, int tempAP, float tempCrit) {
+		Debug.Log ("Effect " + ability.name + "!");
+		CombatController._instance.EffectAttackPlayer (ability.CalDmg (tempAP, tempCrit));
+	}
 
 
 	/// <summary>

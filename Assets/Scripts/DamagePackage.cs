@@ -15,17 +15,11 @@ public class DamagePackage {
 	//Is crit?
 	public bool isCrit;
 
-	public DamagePackage(ElementalType newType, float newDamage){
-		Debug.Log("You should not use this constructor, include name and crit");
+	public DamagePackage(ElementalType newType, float newDamage, string newName, bool newCrit){
 		type = newType;
 		damage = newDamage;
-	}
-
-	public DamagePackage(ElementalType newType, float newDamage, string nName, bool crit){
-		type = newType;
-		damage = newDamage;
-		name = nName;
-		isCrit = crit;
+		name = newName;
+		isCrit = newCrit;
 	}
 
 	public void DamageReduction(float reduction) { 
