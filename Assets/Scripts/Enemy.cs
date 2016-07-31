@@ -15,7 +15,7 @@ public class Enemy {
 	//Its attack power.
 	public int AP;
 
-	float critChance;
+	public float critChance;
 
 
 
@@ -68,7 +68,7 @@ public class Enemy {
 		health -= (int)Math.Floor(dp.damage);
 		Debug.Log ("Enemy took: " + dp.damage + " damage");
 		//Update Healthbar
-		VisualController._instance.UpdateEnemyHealthbar(health);
+		CombatText._instance.EnemyTakesDamage((int)Math.Floor(dp.damage), dp.isCrit, false, dp.name, health);
 		if (health <= 0) {
 			Player._instance.AddGold (level);
 			Player._instance.AddExperience (level);
@@ -85,7 +85,7 @@ public class Enemy {
 		health += (int)Math.Floor(hp.damage);
 		Debug.Log ("Enemy recieved: " + hp.damage + " health");
 		//Update Healthbar
-		VisualController._instance.UpdateEnemyHealthbar (health);
+		CombatText._instance.EnemyTakesDamage((int)Math.Floor(hp.damage), hp.isCrit, true, hp.name, health);
 	}
 
 	/// <summary>
@@ -93,15 +93,14 @@ public class Enemy {
 	/// </summary>
 	/// <param name="ability">Ability.</param>
 	/// <param name="tempAP">Temporary AP</param>
-	public void UseEffect(Skill ability, int tempAP) {
-		if (!ability.selfDam) { // Healing
-			Debug.Log ("Effect " + ability.name + "!");
-			CombatController._instance.EffectHealEnemy (ability.CalDmg (tempAP, critChance));
-		} 
-		else { // Damage
-			Debug.Log ("Effect " + ability.name + "!");
-			CombatController._instance.EffectAttackEnemy (ability.CalDmg (tempAP, critChance));
-		}
+	public void UseHealEffect(Skill ability) {
+		Debug.Log ("Effect " + ability.name + "!");
+		CombatController._instance.EffectHealEnemy (ability.CalDmg (AP, critChance));
+	}
+
+	public void UseAttackEffect(Skill ability, int tempAP, float tempCrit) {
+		Debug.Log ("Effect " + ability.name + "!");
+		CombatController._instance.EffectAttackEnemy (ability.CalDmg (tempAP, tempCrit));
 	}
 
 	/// <summary>
@@ -113,7 +112,8 @@ public class Enemy {
 		RunEffects ();
 		if (isStun) {
 			Debug.Log ("Enemy is Stunned");
-			Player._instance.MyTurn ();
+			CombatText._instance.ShowInfo ("Enemy is stunned!", InfoType.Unskippable);
+			CombatController._instance.TryEndTurn ();
 		} else {
 			UseAttack ();
 		}
@@ -126,10 +126,11 @@ public class Enemy {
 	/// </summary>
 	void UseAttack() {
 		//TODO: Need simple AI to pick attacks.
-		Skill ability = abilties[2];
+		//Skill ability = abilties[2];
+		Skill ability = abilties [rnd.Next (0, 3)];
 
 		while (ability.IsOnCD ()) {
-			ability = abilties [rnd.Next (0, 2)];
+			ability = abilties [rnd.Next (0, 3)];
 		}
 		Debug.Log ("Enemy used " + ability.name + "!");
 
@@ -175,10 +176,8 @@ public class Enemy {
 		} else {
 			bool nameMatch = false;
 			for (int i = 0; i < effects.Count; i++) {
-				Debug.Log ("1: " + eff.name + " 2: " + effects [i].name);
 				if(eff.name == effects[i].name) {
 					nameMatch = true;
-					Debug.Log ("1: " + eff.effectFromSkill + " 2: " + effects [i].effectFromSkill);
 					if (eff.effectFromSkill == effects [i].effectFromSkill) {
 						effects [i].ResetEffect (Player._instance, this, PCNPC.NPC);
 					} else {

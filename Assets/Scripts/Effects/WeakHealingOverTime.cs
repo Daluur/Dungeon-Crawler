@@ -12,12 +12,12 @@ public class WeakHealingOverTime : Effect {
 	public WeakHealingOverTime(Skill skill) {
 		name = "Weak Healing Over Time";
 		effectFromSkill = skill.name;
-		simpleSkill = new SimpleSkill ("Healing Over Time", true, skill.type, skill.APMult * 0.15F, false);
+		simpleSkill = new SimpleSkill ("Healing Over Time", true, skill.type, skill.APMult * 0.15F);
 	}
 
 	public override void AddToSkill(Skill skill) {
 		effectFromSkill = skill.name;
-		simpleSkill = new SimpleSkill ("Healing Over Time", true, skill.type, skill.APMult * 0.15F, false);
+		simpleSkill = new SimpleSkill ("Healing Over Time", true, skill.type, skill.APMult * 0.15F);
 	}
 
 	public override void ActivateEffect(Player player, Enemy enemy, PCNPC whoUsedIt) {
@@ -32,9 +32,9 @@ public class WeakHealingOverTime : Effect {
 
 		public override void DoStuff(Player player, Enemy enemy, PCNPC whoUsedIt) {
 		if (whoUsedIt == PCNPC.NPC) {
-			enemy.UseEffect (simpleSkill, apWhenActivated);
+			enemy.UseHealEffect (simpleSkill);
 		} else {
-			player.UseEffect (simpleSkill, apWhenActivated);
+			player.UseHealEffect (simpleSkill);
 		}
 		round--;
 	}

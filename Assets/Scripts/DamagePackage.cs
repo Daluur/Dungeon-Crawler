@@ -10,10 +10,16 @@ public class DamagePackage {
 	public ElementalType type;
 	//The damage.
 	public float damage;
+	//The name
+	public string name;
+	//Is crit?
+	public bool isCrit;
 
-	public DamagePackage(ElementalType newType, float newDamage){
+	public DamagePackage(ElementalType newType, float newDamage, string newName, bool newCrit){
 		type = newType;
 		damage = newDamage;
+		name = newName;
+		isCrit = newCrit;
 	}
 
 	public void DamageReduction(float reduction) { 

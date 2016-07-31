@@ -24,7 +24,7 @@ public class Player : MonoBehaviour {
 	int bonusAP;
 
 	//Players current crit
-	float critChance;
+	public float critChance;
 	int critRating;
 
 	// Player Damage reductions and increases
@@ -69,7 +69,7 @@ public class Player : MonoBehaviour {
 		}
 		CC = CombatController._instance;
 		AddAbilities ();
-		VisualController._instance.CreatePlayerHealthbar (health);
+		VisualController._instance.CreatePlayerHealthbar (maxHealth);
 	}
 
 	/// <summary>
@@ -86,7 +86,7 @@ public class Player : MonoBehaviour {
 		level = 1;
 		experience = 0;
 		XPforLevel = 250;
-		maxHealth = 300;
+		maxHealth = 3000;
 		health = maxHealth;
 		bonusHealth = 0;
 		AP = 40;
@@ -97,7 +97,7 @@ public class Player : MonoBehaviour {
 		armor = 0;
 		gold = 0;
 		rubies = 0;
-		VisualController._instance.CreatePlayerHealthbar (health);
+		VisualController._instance.CreatePlayerHealthbar (maxHealth);
 	}
 
 	/// <summary>
@@ -107,11 +107,19 @@ public class Player : MonoBehaviour {
 	public void AddExperience(int Enemylevel) {
 		experience += Enemylevel * 100;
 		if (XPforLevel < experience) {
-			level++;
-			experience -= XPforLevel;
-			XPforLevel *= 2;
+			DING ();
 		}
 	}	
+
+	public void DING() {
+		level++;
+		experience -= XPforLevel;
+		XPforLevel *= 2;
+		maxHealth += 300; //Whatever much health you get per level
+		health = maxHealth;
+		VisualController._instance.UpdatePlayerMaxHealth (maxHealth);
+		VisualController._instance.UpdatePlayerHealthbar (health);
+	}
 
 	/// <summary>
 	/// Adds gold.
@@ -141,13 +149,14 @@ public class Player : MonoBehaviour {
 		health -= (int)Math.Floor(dp.damage);
 		Debug.Log ("Player took: " + dp.damage + " damage");
 		//Updates the healthbar
-		VisualController._instance.UpdatePlayerHealthbar (health);
+		CombatText._instance.PlayerTakesDamage((int)Math.Floor(dp.damage), dp.isCrit, false, dp.name, health);
+		//VisualController._instance.UpdatePlayerHealthbar (health);
 		if (health <= 0) {
 			return true;
 		}
 		return false;
 	}
-
+		
 	/// <summary>
 	/// Heals the Player
 	/// </summary>
@@ -156,7 +165,11 @@ public class Player : MonoBehaviour {
 		health += (int)Math.Floor(hp.damage);
 		Debug.Log ("Player recieved: " + hp.damage + " health");
 		//Updates the healthbar
-		VisualController._instance.UpdatePlayerHealthbar (health);
+		CombatText._instance.PlayerTakesDamage((int)Math.Floor(hp.damage), hp.isCrit, true, hp.name, health);
+	}
+
+	public void HealToFull() {
+		health = maxHealth;
 	}
 
 	/// <summary>
@@ -194,16 +207,15 @@ public class Player : MonoBehaviour {
 	/// </summary>
 	/// <param name="ability">Ability</param>
 	/// <param name="tempAP">Temporary AP</param>
-	public void UseEffect(Skill ability, int tempAP) {
-		if (!ability.selfDam) { // Healing
-			Debug.Log ("Effect " + ability.name + "!");
-			CombatController._instance.EffectHealPlayer (ability.CalDmg (AP, critChance));
-		} 
-		else { // Damage
-			Debug.Log ("Effect " + ability.name + "!");
-			CombatController._instance.EffectAttackPlayer (ability.CalDmg (tempAP, critChance));
-		}
-}
+	public void UseHealEffect(Skill ability) {
+		Debug.Log ("Effect " + ability.name + "!");
+		CombatController._instance.EffectHealPlayer (ability.CalDmg (AP, critChance));
+	}
+
+	public void UseAttackEffect(Skill ability, int tempAP, float tempCrit) {
+		Debug.Log ("Effect " + ability.name + "!");
+		CombatController._instance.EffectAttackPlayer (ability.CalDmg (tempAP, tempCrit));
+	}
 
 
 	/// <summary>
@@ -215,7 +227,8 @@ public class Player : MonoBehaviour {
 		RunEffects ();
 		if (isStun) {
 			Debug.Log ("Player is Stunned");
-			CC.currentEnemy.MyTurn ();
+			CombatText._instance.ShowInfo ("You are stunned!", InfoType.Unskippable);
+			CC.TryEndTurn ();
 		} else {
 			myTurn = true;
 		}
@@ -248,12 +261,12 @@ public class Player : MonoBehaviour {
 		} else {
 			bool nameMatch = false;
 			for (int i = 0; i < effects.Count; i++) {
-				Debug.Log ("1: " + eff.name + " 2: " + effects [i].name);
 				if(eff.name == effects[i].name) {
 					nameMatch = true;
-					Debug.Log ("1: " + eff.effectFromSkill + " 2: " + effects [i].effectFromSkill);
 					if (eff.effectFromSkill == effects [i].effectFromSkill) {
 						effects [i].ResetEffect (this, CC.currentEnemy, PCNPC.PC);
+					} else {
+						effects.Add (eff);
 					}
 				}
 			}
