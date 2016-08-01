@@ -9,7 +9,7 @@ public class SwarmOfButterflies : Skill {
 		name = "Swarm of Butterflies";
 		selfTar = true;
 		selfDam = false;
-		type = ElementalType.None;
+		type = ElementalType.Earth;
 		APMult = 15;
 		CDduration = 2;
 		effects.Add(new WeakHealingOverTime (this));

@@ -5,10 +5,10 @@ public class Dungeon {
 
 	//Which type, e.g. Fire, Water, Earth.
 	ElementalType dungeonType;
+	//Level you should be.
+	public int level;
 	//How many enemies.
 	int length;
-	//Level you should be.
-	int level;
 	//which enemy out of the length is the current.
 	int atIndex = -1;
 
@@ -45,12 +45,15 @@ public class Dungeon {
 	public void NextEncounter(){
 		atIndex++;
 		if (atIndex == length) {
-			Debug.Log ("Dungeon is finished");
-			Debug.Log ("Should give end-of-dungeon loot now!");
-			//Leaves the dungeon.
-			GameStateManager._instance.LeaveDungeon ();
+			VisualController._instance.ShowLootButton ();
 			return;
 		}
+		if (atIndex == length - 1) {
+			//TODO: Create a boss
+		} else {
+			//Create a normal dungeon creep
+		}
+
 		//Creates a new enemy
 		Debug.Log ("Created new enemy, enemy number: "+atIndex);
 		EnemyInfo temp = EnemyDatabase._instance.CreateEnemyOfType (dungeonType, level);

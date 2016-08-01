@@ -46,9 +46,9 @@ public class Player : MonoBehaviour {
 	List<Skill> abilties = new List<Skill>();
 	public List<Effect> effects = new List<Effect>();
 
+	// Currency
 	public int gold;
-
-	int rubies;
+	public int rubies;
 
 
 
@@ -104,37 +104,27 @@ public class Player : MonoBehaviour {
 	/// Adds experience.
 	/// </summary>
 	/// <param name="Enemylevel">Enemylevel.</param>
-	public void AddExperience(int Enemylevel) {
-		experience += Enemylevel * 100;
+	public void AddExperience(int enemyLevel) {
+		experience += enemyLevel * 100;
 		if (XPforLevel < experience) {
 			DING ();
 		}
 	}	
 
-	public void DING() {
-		level++;
-		experience -= XPforLevel;
-		XPforLevel *= 2;
-		maxHealth += 300; //Whatever much health you get per level
-		health = maxHealth;
-		VisualController._instance.UpdatePlayerMaxHealth (maxHealth);
-		VisualController._instance.UpdatePlayerHealthbar (health);
-	}
-
 	/// <summary>
 	/// Adds gold.
 	/// </summary>
 	/// <param name="Enemylevel">Enemylevel.</param>
-	public void AddGold(int Enemylevel) {
-		gold += Enemylevel * 5;
+	public void AddGold(int enemyLevel) {
+		gold += enemyLevel * 5;
 	}
 
 	/// <summary>
 	/// Adds rubies.
 	/// </summary>
 	/// <param name="Enemylevel">Enemylevel.</param>
-	public void AddRubies(int Enemylevel) {
-		rubies += Enemylevel * 2;
+	public void AddRubies(int dungeonLevel) {
+		rubies += dungeonLevel * 2;
 	}
 
 	/// <summary>
@@ -142,7 +132,7 @@ public class Player : MonoBehaviour {
 	/// </summary>
 	/// <returns><c>true</c>, if dead, <c>false</c> otherwise.</returns>
 	/// <param name="dp">DamagePackage.</param>
-	public bool TakeDamage(ref DamagePackage dp){
+	public bool TakeDamage(DamagePackage dp){
 		dp.DamageIncrease (damageIncrease);
 		dp.DamageReduction (damageReduction);
 		dp.DamageReduction (additionalReductions);
@@ -156,13 +146,17 @@ public class Player : MonoBehaviour {
 		}
 		return false;
 	}
+
 		
 	/// <summary>
 	/// Heals the Player
 	/// </summary>
 	/// <param name="hp">DamagePackage.</param>
-	public void HealUp(ref DamagePackage hp){
+	public void HealUp(DamagePackage hp){
 		health += (int)Math.Floor(hp.damage);
+		if (health > maxHealth) {
+			health = maxHealth;
+		}
 		Debug.Log ("Player recieved: " + hp.damage + " health");
 		//Updates the healthbar
 		CombatText._instance.PlayerTakesDamage((int)Math.Floor(hp.damage), hp.isCrit, true, hp.name, health);
@@ -217,6 +211,15 @@ public class Player : MonoBehaviour {
 		CombatController._instance.EffectAttackPlayer (ability.CalDmg (tempAP, tempCrit));
 	}
 
+	public void DING() {
+		level++;
+		experience -= XPforLevel;
+		XPforLevel *= 2;
+		maxHealth += 300; //Whatever much health you get per level
+		health = maxHealth;
+		VisualController._instance.UpdatePlayerMaxHealth (maxHealth);
+		VisualController._instance.UpdatePlayerHealthbar (health);
+	}
 
 	/// <summary>
 	/// Allows the player to perform his turn.
@@ -332,7 +335,7 @@ public class Player : MonoBehaviour {
 		experience = data.experience;
 		XPforLevel = data.XPforLevel;
 		bonusHealth = data.bonusHealth;
-		maxHealth = (3000 * level) + bonusHealth;
+		maxHealth = (2000 * level) + bonusHealth;
 		health = maxHealth;
 		bonusAP = data.bonusAP;
 		AP = (level * 40) + bonusAP;

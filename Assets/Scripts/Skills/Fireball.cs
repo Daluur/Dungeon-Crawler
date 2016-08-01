@@ -10,7 +10,7 @@ public class Fireball : Skill {
 		selfTar = false;
 		selfDam = false;
 		type = ElementalType.Fire;
-		APMult = 20;
+		APMult = 8;
 		CDduration = 2;
 		effects.Add(new WeakDamageOverTime (this));
 	}

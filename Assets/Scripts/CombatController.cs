@@ -45,7 +45,7 @@ public class CombatController : MonoBehaviour {
 	/// </summary>
 	/// <param name="dp">Dp.</param>
 	public void AttackEnemy(DamagePackage dp){
-		if (currentEnemy.TakeDamage (ref dp)) {
+		if (currentEnemy.TakeDamage (dp)) {
 			Debug.Log ("Enemey Died!");
 			VisualController._instance.RemoveEnemyVisual ();
 			currentDungeon.NextEncounter ();
@@ -60,7 +60,7 @@ public class CombatController : MonoBehaviour {
 	/// </summary>
 	/// <param name="dp">Dp.</param>
 	public void EnemySelfDamage(DamagePackage dp){
-		if (currentEnemy.TakeDamage (ref dp)) {
+		if (currentEnemy.TakeDamage (dp)) {
 			Debug.Log ("Enemey Died!");
 			VisualController._instance.RemoveEnemyVisual ();
 			currentDungeon.NextEncounter ();
@@ -74,7 +74,7 @@ public class CombatController : MonoBehaviour {
 	/// </summary>
 	/// <param name="dp">Dp.</param>
 	public void EffectAttackEnemy(DamagePackage dp){
-		if (currentEnemy.TakeDamage (ref dp)) {
+		if (currentEnemy.TakeDamage (dp)) {
 			Debug.Log ("Enemey Died!");
 			VisualController._instance.RemoveEnemyVisual ();
 			currentDungeon.NextEncounter ();
@@ -86,7 +86,7 @@ public class CombatController : MonoBehaviour {
 	/// </summary>
 	/// <param name="hp">Hp.</param>
 	public void HealEnemy(DamagePackage hp){
-		currentEnemy.HealUp (ref hp);
+		currentEnemy.HealUp (hp);
 		//Says it is the players turn.
 		TryEndTurn();
 	}
@@ -96,7 +96,7 @@ public class CombatController : MonoBehaviour {
 	/// </summary>
 	/// <param name="hp">Hp.</param>
 	public void EffectHealEnemy(DamagePackage hp){
-		currentEnemy.HealUp (ref hp);
+		currentEnemy.HealUp (hp);
 	}
 
 	/// <summary>
@@ -104,7 +104,7 @@ public class CombatController : MonoBehaviour {
 	/// </summary>
 	/// <param name="dp">Dp.</param>
 	public void AttackPlayer(DamagePackage dp){
-		if (player.TakeDamage (ref dp)) {
+		if (player.TakeDamage (dp)) {
 			Debug.Log ("Player died!");
 		} else {
 			TryEndTurn ();
@@ -116,7 +116,7 @@ public class CombatController : MonoBehaviour {
 	/// </summary>
 	/// <param name="dp">Dp.</param>
 	public void PlayerSelfDamage(DamagePackage dp){
-		if (player.TakeDamage (ref dp)) {
+		if (player.TakeDamage (dp)) {
 			Debug.Log ("Player died!");
 		} else {
 			//Says it is the players turn.
@@ -129,7 +129,7 @@ public class CombatController : MonoBehaviour {
 	/// </summary>
 	/// <param name="dp">Dp.</param>
 	public void EffectAttackPlayer(DamagePackage dp) {
-		if (player.TakeDamage (ref dp)) {
+		if (player.TakeDamage (dp)) {
 			Debug.Log ("Player died!");
 		}
 	}
@@ -139,7 +139,7 @@ public class CombatController : MonoBehaviour {
 	/// </summary>
 	/// <param name="hp">Hp.</param>
 	public void HealPlayer(DamagePackage hp){
-		player.HealUp (ref hp);
+		player.HealUp (hp);
 		//Says it is the enemies turn.
 		TryEndTurn();
 	}
@@ -149,7 +149,7 @@ public class CombatController : MonoBehaviour {
 	/// </summary>
 	/// <param name="hp">Hp.</param>
 	public void EffectHealPlayer(DamagePackage hp){
-		player.HealUp (ref hp);
+		player.HealUp (hp);
 	}
 
 
@@ -166,8 +166,11 @@ public class CombatController : MonoBehaviour {
 	/// </summary>
 	public void DoLoot(){
 		VisualController._instance.RemoveLootButton ();
-		Debug.Log ("Player recieved some loot (NYI)");
-		VisualController._instance.ShowNextEncounterButton ();
+		Debug.Log ("Player recieved Two Rubies per level of the dungeon");
+		Player._instance.AddRubies (currentDungeon.level);
+		//Leaves the dungeon.
+		Debug.Log ("Dungeon is finished");
+		GameStateManager._instance.LeaveDungeon ();
 	}
 
 	/// <summary>

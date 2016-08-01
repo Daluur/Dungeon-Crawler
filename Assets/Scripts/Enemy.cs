@@ -11,6 +11,7 @@ public class Enemy {
 	int level;
 	//Its hp.
 	int health;
+	int maxHealth;
 
 	//Its attack power.
 	public int AP;
@@ -47,12 +48,13 @@ public class Enemy {
 	public Enemy(ElementalType newType, int newLevel, int number){
 		type = newType;
 		level = newLevel;
-		health = level * 100000;
+		maxHealth = level * 1000;
+		health = maxHealth;
 		damageReduction = 11.0F;
 		critChance = level;
 		//Instansiate healthbar with max hp.
 		VisualController._instance.CreateEnemyHealthbar (health);
-		AP = level + number;
+		AP = (level*10) + (number*5);
 		addAbilities();
 	}
 
@@ -61,10 +63,11 @@ public class Enemy {
 	/// </summary>
 	/// <returns><c>true</c>, if dead, <c>false</c> otherwise.</returns>
 	/// <param name="dp">DamagePackage</param>
-	public bool TakeDamage(ref DamagePackage dp){
-		dp.DamageIncrease (damageIncrease);
-		dp.DamageReduction (damageReduction);
-		dp.DamageReduction (additionalReductions);
+	public bool TakeDamage(DamagePackage dp){
+		dp.DamageIncrease (damageIncrease); // From effects
+		dp.DamageReduction (additionalReductions); // From effects
+		TypeChecks(ref dp); // Type check, strong against, weak against
+		dp.DamageReduction (damageReduction); // From armor
 		health -= (int)Math.Floor(dp.damage);
 		Debug.Log ("Enemy took: " + dp.damage + " damage");
 		//Update Healthbar
@@ -77,12 +80,44 @@ public class Enemy {
 		return false;
 	}
 
+	//Change this however, also might need to add magic, since we have talked about magci resist.
+	void TypeChecks(ref DamagePackage dp) {
+		if (dp.type == ElementalType.Earth) {
+			if (type == ElementalType.Water) {
+				dp.DamageIncrease (20);
+				return;
+			} else if (type == ElementalType.Fire) {
+				dp.DamageReduction (20);
+				return;
+			}
+		} else if (dp.type == ElementalType.Fire) {
+			if(type == ElementalType.Earth) {
+				dp.DamageIncrease (20);
+				return;
+			} else if (type == ElementalType.Water) {
+				dp.DamageReduction (20);
+				return;
+			}
+		} else if (dp.type == ElementalType.Water) {
+			if(type == ElementalType.Fire) {
+				dp.DamageIncrease (20);
+				return;
+			} else if (type == ElementalType.Earth) {
+				dp.DamageReduction (20);
+				return;
+			}
+		}
+	}
+
 	/// <summary>
 	/// Heals the Enemy
 	/// </summary>
 	/// <param name="hp">DamagePackage</param>
-	public void HealUp(ref DamagePackage hp){
+	public void HealUp(DamagePackage hp){
 		health += (int)Math.Floor(hp.damage);
+		if (health > maxHealth) {
+			health = maxHealth;
+		}
 		Debug.Log ("Enemy recieved: " + hp.damage + " health");
 		//Update Healthbar
 		CombatText._instance.EnemyTakesDamage((int)Math.Floor(hp.damage), hp.isCrit, true, hp.name, health);

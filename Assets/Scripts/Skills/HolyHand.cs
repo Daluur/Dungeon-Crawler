@@ -10,7 +10,7 @@ public class HolyHand : Skill {
 		selfTar = true;
 		selfDam = false;
 		type = ElementalType.None;
-		APMult = 15;
+		APMult = 6;
 		CD = 0;
 		CDduration = 2;
 		effects.Add (new WeakDamageOverTime (this));
@@ -19,7 +19,7 @@ public class HolyHand : Skill {
 
 	public override DamagePackage CalDmg(int AP, float critChance){
 		System.Random rnd = new System.Random();
-		if (rnd.Next (0, 100) < critChance) {
+		if (rnd.Next (0, 100) < 100) {
 			return new DamagePackage (type, (AP * APMult) * 2, name, true);
 		}
 		return new DamagePackage (type, AP * APMult, name, false);

@@ -10,7 +10,7 @@ public class MegaPunch : Skill {
 		selfTar = false;
 		selfDam = false;
 		type = ElementalType.None;
-		APMult = 100;
+		APMult = 5;
 		CDduration = 0;
 	}
 
