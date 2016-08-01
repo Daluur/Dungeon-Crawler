@@ -8,6 +8,8 @@ public class Player : MonoBehaviour {
 
 	public static Player _instance;
 	CombatController CC;
+	//Used to see the cooldown and skill names.
+	public AttackButtonsUtil ABU;
 
 	//Players level
 	public int level;
@@ -67,9 +69,12 @@ public class Player : MonoBehaviour {
 		} else {
 			NewPlayer ();
 		}
-		CC = CombatController._instance;
 		AddAbilities ();
 		VisualController._instance.CreatePlayerHealthbar (maxHealth);
+	}
+
+	void Start(){
+		CC = CombatController._instance;
 	}
 
 	/// <summary>
@@ -199,6 +204,8 @@ public class Player : MonoBehaviour {
 
 				}
 			}
+			//Updates the visual CD effect.
+			ABU.UpdateButtons ();
 		}
 	}
 
@@ -227,7 +234,7 @@ public class Player : MonoBehaviour {
 		RunEffects ();
 		if (isStun) {
 			Debug.Log ("Player is Stunned");
-			CombatText._instance.ShowInfo ("You are stunned!", InfoType.Unskippable);
+			CombatText._instance.ShowInfo ("You are stunned!", InfoType.UnskippableError);
 			CC.TryEndTurn ();
 		} else {
 			myTurn = true;
@@ -265,13 +272,17 @@ public class Player : MonoBehaviour {
 					nameMatch = true;
 					if (eff.effectFromSkill == effects [i].effectFromSkill) {
 						effects [i].ResetEffect (this, CC.currentEnemy, PCNPC.PC);
+						CombatText._instance.AddPlayerEffect (eff.name, true);
+						CombatText._instance.AddPlayerEffect (eff.name, false);
 					} else {
 						effects.Add (eff);
+						CombatText._instance.AddPlayerEffect (eff.name, false);
 					}
 				}
 			}
 			if (!nameMatch) {
 				effects.Add (eff);
+				CombatText._instance.AddPlayerEffect (eff.name, false);
 			}
 		}
 	}
@@ -282,6 +293,7 @@ public class Player : MonoBehaviour {
 	/// <param name="eff">Effect</param>
 	public void RemoveEffect(Effect eff) {
 		effects.Remove (eff);
+		CombatText._instance.AddPlayerEffect (eff.name, true);
 	}
 
 	/// <summary>
@@ -291,6 +303,8 @@ public class Player : MonoBehaviour {
 		foreach (Skill attack in abilties) {
 			attack.UpdateCD();
 		}
+		//Updates the visual CD effect.
+		ABU.UpdateButtons ();
 	}
 		
 	// Wrappers for attacking
@@ -310,7 +324,18 @@ public class Player : MonoBehaviour {
 		abilties.Add (new MegaPunch());
 		abilties.Add (new Fireball());
 		abilties.Add (new HolyHand());
+		//Updates the onscreen buttons.
+		ABU.UpdateSkills ();
 	} 
+
+	/// <summary>
+	/// Returns the skill (there are only 0-2).
+	/// </summary>
+	/// <returns>The skill.</returns>
+	/// <param name="i">The index.</param>
+	public Skill GetSkill(int i){
+		return abilties [i];
+	}
 
 	public PlayerData savePlayerData() {
 		PlayerData data = new PlayerData ();

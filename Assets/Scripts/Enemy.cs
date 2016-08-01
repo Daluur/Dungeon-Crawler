@@ -112,7 +112,7 @@ public class Enemy {
 		RunEffects ();
 		if (isStun) {
 			Debug.Log ("Enemy is Stunned");
-			CombatText._instance.ShowInfo ("Enemy is stunned!", InfoType.Unskippable);
+			CombatText._instance.ShowInfo ("Enemy is stunned!", InfoType.UnskippableError);
 			CombatController._instance.TryEndTurn ();
 		} else {
 			UseAttack ();
@@ -180,13 +180,17 @@ public class Enemy {
 					nameMatch = true;
 					if (eff.effectFromSkill == effects [i].effectFromSkill) {
 						effects [i].ResetEffect (Player._instance, this, PCNPC.NPC);
+						CombatText._instance.AddEnemyEffect (eff.name, true);
+						CombatText._instance.AddEnemyEffect (eff.name, false);
 					} else {
 						effects.Add (eff);
+						CombatText._instance.AddEnemyEffect (eff.name, false);
 					}
 				}
 			}
 			if (!nameMatch) {
 				effects.Add (eff);
+				CombatText._instance.AddEnemyEffect (eff.name, false);
 			}
 		}
 	}
@@ -197,6 +201,7 @@ public class Enemy {
 	/// <param name="eff">Effect</param>
 	public void RemoveEffect(Effect eff) {
 		effects.Remove (eff);
+		CombatText._instance.AddEnemyEffect (eff.name, true);
 	}
 
 	/// <summary>
