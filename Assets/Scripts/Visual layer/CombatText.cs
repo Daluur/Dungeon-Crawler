@@ -61,6 +61,13 @@ public class CombatText : MonoBehaviour {
 		}
 	}
 
+	public void AddEnemyEffect(string name, bool end){
+		eQ.Enqueue (new AnimationQueue (name, end));
+		if (eQ.Count == 1 && !playingEAnim) {
+			EnemyAnimEnd ();
+		}
+	}
+
 	/// <summary>
 	/// Players takes damage, plays animation.
 	/// </summary>
@@ -72,6 +79,13 @@ public class CombatText : MonoBehaviour {
 	public void PlayerTakesDamage(int d, bool c, bool h, string name, int health){
 		pQ.Enqueue (new AnimationQueue (d, c, h, name, health));
 		Debug.Log ("added an player animation: " + d + " damage. " + c + " crit. " + h + " heal");
+		if (pQ.Count == 1 && !playingPAnim) {
+			PlayerAnimEnd ();
+		}
+	}
+
+	public void AddPlayerEffect(string name, bool end){
+		pQ.Enqueue (new AnimationQueue (name, end));
 		if (pQ.Count == 1 && !playingPAnim) {
 			PlayerAnimEnd ();
 		}
@@ -106,13 +120,22 @@ public class CombatText : MonoBehaviour {
 				enemyT.text += "+" + temp.damage;
 				enemyA.SetTrigger ("Heal");
 				Debug.Log ("played a heal animation: " + temp.damage);
-			} else {
+			} else if (temp._isEffect) {
+				if (temp._effectEnd) {
+					enemyT.text = "-"+temp.name;
+				} else {
+					enemyT.text = "+"+temp.name;
+				}
+				enemyA.SetTrigger("Effect");
+			} else{
 				enemyT.text += "-" + temp.damage;
 				enemyA.SetTrigger ("Hit");
 				Debug.Log ("played a hit animation: " + temp.damage);
 			}
 			//Updates the healthbar.
-			VisualController._instance.UpdateEnemyHealthbar (temp.health);
+			if (!temp._isEffect) {
+				VisualController._instance.UpdateEnemyHealthbar (temp.health);
+			}
 		} else {
 			if (pQ.Count > 0) {
 				PlayerAnimEnd ();
@@ -155,13 +178,22 @@ public class CombatText : MonoBehaviour {
 				playerT.text += "+" + temp.damage;
 				playerA.SetTrigger ("Heal");
 				Debug.Log ("played a heal animation: " + temp.damage);
+			} else if (temp._isEffect) {
+				if (temp._effectEnd) {
+					playerT.text = "-"+temp.name;
+				} else {
+					playerT.text = "+"+temp.name;
+				}
+				playerA.SetTrigger("Effect");
 			} else {
 				playerT.text += "-" + temp.damage;
 				playerA.SetTrigger ("Hit");
 				Debug.Log ("played a hit animation: " + temp.damage);
 			}
 			//Updates the healthbar.
-			VisualController._instance.UpdatePlayerHealthbar (temp.health);
+			if (!temp._isEffect) {
+				VisualController._instance.UpdatePlayerHealthbar (temp.health);
+			}
 		} else {
 			if (eQ.Count > 0) {
 				EnemyAnimEnd ();
@@ -197,6 +229,9 @@ public class CombatText : MonoBehaviour {
 		} else if (type == InfoType.Unskippable) {
 			infoA.SetTrigger ("Info");
 			playingUnskippableMessage = true;
+		} else if (type == InfoType.UnskippableError) {
+			infoA.SetTrigger ("Error");
+			playingUnskippableMessage = true;
 		}
 		playingInfoMessage = true;
 	}
@@ -222,6 +257,8 @@ public struct AnimationQueue
 	public int damage;
 	public bool _isCrit;
 	public bool _isHeal;
+	public bool _isEffect;
+	public bool _effectEnd;
 	public int health;
 	public string name;
 
@@ -231,6 +268,18 @@ public struct AnimationQueue
 		_isHeal = h;
 		health = newHealth;
 		name = newName;
+		_isEffect = false;
+		_effectEnd = false;
+	}
+
+	public AnimationQueue(string nName, bool end){
+		name = nName;
+		_isEffect = true;
+		_effectEnd = end;
+		_isCrit = false;
+		_isHeal = false;
+		damage = 0;
+		health = 0;
 	}
 }
 
@@ -238,5 +287,6 @@ public enum InfoType
 {
 	Info,
 	Error,
-	Unskippable
+	Unskippable,
+	UnskippableError
 }

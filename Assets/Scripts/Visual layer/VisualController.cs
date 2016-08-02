@@ -53,8 +53,7 @@ public class VisualController : MonoBehaviour {
 			Debug.LogError ("There already is an enemy!");
 		}
 		currentEnemyInfo = e;
-		Vector3 lift = new Vector3 (0, 2.5F, 0);
-		currentObj = Instantiate(e.visual,lift,Quaternion.identity) as GameObject;
+		currentObj = Instantiate(e.visual,new Vector3 (0, 2.5F, 0),Quaternion.identity) as GameObject;
 	}
 
 	/// <summary>

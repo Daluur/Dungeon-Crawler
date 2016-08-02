@@ -10,16 +10,16 @@ public class MegaPunch : Skill {
 		selfTar = false;
 		selfDam = false;
 		type = ElementalType.None;
-		APMult = 10;
+		APMult = 100;
 		CDduration = 0;
 	}
 
 	public override DamagePackage CalDmg(int AP, float critChance){
 		System.Random rnd = new System.Random();
-		if (rnd.Next (0, 100) < critChance) {
-			return new DamagePackage (type, (AP * APMult) * 2);
+		if (rnd.Next (0, 100) < 100) {
+			return new DamagePackage (type, (AP * APMult) * 2, name, true);
 		}
-		return new DamagePackage (type, AP * APMult);
+		return new DamagePackage (type, AP * APMult, name, false);
 	}
 
 	public override void AddEffect(Effect newEffect) {
