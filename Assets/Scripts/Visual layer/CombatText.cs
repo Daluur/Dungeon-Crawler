@@ -55,7 +55,6 @@ public class CombatText : MonoBehaviour {
 	/// <param name="health">Health.</param>
 	public void EnemyTakesDamage(int d, bool c, bool h, string name, int health){
 		eQ.Enqueue(new AnimationQueue(d, c, h, name, health));
-		Debug.Log ("added an enemy animation: " + d + " damage. " + c + " crit. " + h + " heal");
 		if (eQ.Count == 1 && !playingEAnim) {
 			EnemyAnimEnd ();
 		}
@@ -78,7 +77,6 @@ public class CombatText : MonoBehaviour {
 	/// <param name="health">Health.</param>
 	public void PlayerTakesDamage(int d, bool c, bool h, string name, int health){
 		pQ.Enqueue (new AnimationQueue (d, c, h, name, health));
-		Debug.Log ("added an player animation: " + d + " damage. " + c + " crit. " + h + " heal");
 		if (pQ.Count == 1 && !playingPAnim) {
 			PlayerAnimEnd ();
 		}
@@ -112,14 +110,12 @@ public class CombatText : MonoBehaviour {
 			AnimationQueue temp = eQ.Dequeue ();
 			playingEAnim = true;
 			enemyT.text = temp.name + "\n";
-			if (temp._isCrit) {
-				enemyT.text += "-" + temp.damage;
-				enemyA.SetTrigger ("Crit");
-				Debug.Log ("played a crit animation: " + temp.damage);
-			} else if (temp._isHeal) {
+			if (temp._isHeal) {
 				enemyT.text += "+" + temp.damage;
+				if (temp._isCrit) {
+					enemyT.text += "!";
+				}
 				enemyA.SetTrigger ("Heal");
-				Debug.Log ("played a heal animation: " + temp.damage);
 			} else if (temp._isEffect) {
 				if (temp._effectEnd) {
 					enemyT.text = "-"+temp.name;
@@ -129,8 +125,12 @@ public class CombatText : MonoBehaviour {
 				enemyA.SetTrigger("Effect");
 			} else{
 				enemyT.text += "-" + temp.damage;
-				enemyA.SetTrigger ("Hit");
-				Debug.Log ("played a hit animation: " + temp.damage);
+				if (temp._isCrit) {
+					enemyT.text += "!";
+					enemyA.SetTrigger ("Crit");
+				} else {
+					enemyA.SetTrigger ("Hit");
+				}
 			}
 			//Updates the healthbar.
 			if (!temp._isEffect) {
@@ -170,14 +170,12 @@ public class CombatText : MonoBehaviour {
 			AnimationQueue temp = pQ.Dequeue ();
 			playingPAnim = true;
 			playerT.text = temp.name + "\n";
-			if (temp._isCrit) {
-				playerT.text += "-" + temp.damage;
-				playerA.SetTrigger ("Crit");
-				Debug.Log ("played a crit animation: " + temp.damage);
-			} else if (temp._isHeal) {
+			if (temp._isHeal) {
 				playerT.text += "+" + temp.damage;
+				if (temp._isCrit) {
+					playerT.text += "!";
+				}
 				playerA.SetTrigger ("Heal");
-				Debug.Log ("played a heal animation: " + temp.damage);
 			} else if (temp._isEffect) {
 				if (temp._effectEnd) {
 					playerT.text = "-"+temp.name;
@@ -187,8 +185,12 @@ public class CombatText : MonoBehaviour {
 				playerA.SetTrigger("Effect");
 			} else {
 				playerT.text += "-" + temp.damage;
-				playerA.SetTrigger ("Hit");
-				Debug.Log ("played a hit animation: " + temp.damage);
+				if (temp._isCrit) {
+					playerT.text += "!";
+					playerA.SetTrigger ("Crit");
+				} else {
+					playerA.SetTrigger ("Hit");
+				}
 			}
 			//Updates the healthbar.
 			if (!temp._isEffect) {
