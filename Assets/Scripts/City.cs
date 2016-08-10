@@ -31,4 +31,9 @@ public class City : MonoBehaviour {
 		GameStateManager._instance.EnterDungeon ();
 		new Dungeon ((ElementalType)i, length, player.level);
 	}
+
+	public void EnterShop(){
+		VisualController._instance.LeaveTown ();
+		VisualController._instance.EnterShop ();
+	}
 }

@@ -30,6 +30,8 @@ public class VisualController : MonoBehaviour {
 	public GameObject combatCanvas;
 	public GameObject townCanvas;
 
+	public StatShop shop;
+
 	public GameObject lootButton;
 	public GameObject nextEncounterButton;
 
@@ -150,5 +152,9 @@ public class VisualController : MonoBehaviour {
 
 	public void EnterTown(){
 		townCanvas.SetActive (true);
+	}
+
+	public void EnterShop(){
+		shop.EnterShop ();
 	}
 }
