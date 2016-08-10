@@ -28,7 +28,13 @@ public class ShopPanel : MonoBehaviour {
 				button.interactable = false;
 			}
 		} else {
-			//Code for purchasing with rubies.
+			if (SPI.cost <= Player._instance.rubies) {
+				buttonText.text = "Buy: " + SPI.cost;
+				button.interactable = true;
+			} else {
+				buttonText.text = "Costs: " + SPI.cost;
+				button.interactable = false;
+			}
 		}
 	}
 

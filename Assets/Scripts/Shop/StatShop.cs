@@ -6,11 +6,30 @@ using System;
 
 public class StatShop : MonoBehaviour {
 
+
+	public static StatShop _instance;
+
 	public GameObject shopCanvas;
 	public RectTransform panelGroupRect;
 	public GameObject panelPrefab;
 	List<ShopPanel> panels = new List<ShopPanel>();
 	public ShopPanelInfo[] SPIs;
+
+	void Awake () {
+		if (_instance == null) {
+			_instance = this;
+		} else {
+			Debug.Log ("There are 2 shops... somehow.. does it make sense?");
+		}
+
+		if (SaveLoad.ShopExist ()) {
+			LoadShopData (SaveLoad.LoadShop ());
+		}
+	}
+
+	void OnApplicationQuit() {
+		SaveLoad.SaveShop (SaveShopData());
+	}
 
 	void CreatePanels(){
 		float num = (SPIs.Length * 100 + 10);
@@ -23,6 +42,14 @@ public class StatShop : MonoBehaviour {
 			temp.SetInfo (SPIs [i], ButtonGotPressed);
 			panels.Add (temp);
 		}
+	}
+
+	public void ResetShop() {
+		for (int i = 0; i < SPIs.Length; i++) {
+			SPIs [i].cost = 0;
+			SPIs [i].boughtCount = 0;
+		}
+
 	}
 
 	void RemovePanels(){
@@ -39,12 +66,32 @@ public class StatShop : MonoBehaviour {
 	}
 
 	public void ButtonGotPressed(int i){
-		if (i == 3) {
-			Player._instance.AddGold (5);
+		if (i == 0) {
+			Player._instance.AddBonusHealth (100);
+			Player._instance.SubstractGold (SPIs [i].cost);
 			SPIs [i].cost += SPIs [i].increasePerBuy;
 			SPIs [i].boughtCount++;
 			panels [i].UpdateValues (SPIs [i]);
+		} else if (i == 1) {
+			Player._instance.AddBonusAP (5);
+			Player._instance.SubstractGold (SPIs [i].cost);
+			SPIs [i].cost += SPIs [i].increasePerBuy;
+			SPIs [i].boughtCount++;
+			panels [i].UpdateValues (SPIs [i]);
+		} else if (i == 2) {
+			Player._instance.AddGold (20);
+			Player._instance.SubstractRubies (SPIs [i].cost);
+			SPIs [i].cost += SPIs [i].increasePerBuy;
+			SPIs [i].boughtCount++;
+			panels [i].UpdateValues (SPIs [i]);
+		} else if (i == 3) {
+			//Player._instance.AddGold (20);
+			//Player._instance.SubstractRubies (SPIs [i].cost);
+			//SPIs [i].cost += SPIs [i].increasePerBuy;
+			//SPIs [i].boughtCount++;
+			//panels [i].UpdateValues (SPIs [i]);
 		}
+
 		UpdatePanels ();
 		HUD._instance.UpdateHUD ();
 	}
@@ -60,6 +107,23 @@ public class StatShop : MonoBehaviour {
 		Invoke ("CreatePanels", 0.1f);
 		//CreatePanels();
 	}
+
+	List<int> SaveShopData() {
+		List<int> data = new List<int> ();
+		foreach (ShopPanelInfo info in SPIs) {
+			data.Add (info.boughtCount);
+		}
+
+		return data;
+	}
+
+	void LoadShopData(List<int> data) {
+		for (int i = 0; i < SPIs.Length; i++) {
+			SPIs [i].boughtCount = data [i];
+			SPIs [i].cost = SPIs [i].increasePerBuy * SPIs [i].boughtCount;
+		}
+	}
+
 }
 
 [Serializable]

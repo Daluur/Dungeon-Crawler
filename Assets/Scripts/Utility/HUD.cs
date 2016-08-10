@@ -23,6 +23,6 @@ public class HUD : MonoBehaviour {
 	}
 	
 	public void UpdateHUD(){
-		HUDText.text = "Level: " + Player._instance.level + "\t\tXP: X" /*+ Player._instance.XPforLevel*/+"/" + Player._instance.XPforLevel + "\t\tGold: " + Player._instance.gold + "\t\tRubies: X" /*+ Player._instance.rubies*/;
+		HUDText.text = "Level: " + Player._instance.level + "\t\tXP: " + Player._instance.experience + "/" + Player._instance.XPforLevel + "\t\tGold: " + Player._instance.gold + "\t\tRubies: " + Player._instance.rubies;
 	}
 }

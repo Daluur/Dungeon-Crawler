@@ -15,6 +15,9 @@ public class DamagePackage {
 	//Is crit?
 	public bool isCrit;
 
+	//Hvis null, er der en type forskel, true = strong agaisnt, false = weak against
+	public bool? isStrong = null;
+
 	public DamagePackage(ElementalType newType, float newDamage, string newName, bool newCrit){
 		type = newType;
 		damage = newDamage;

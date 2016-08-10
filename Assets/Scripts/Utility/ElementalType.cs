@@ -3,5 +3,6 @@
 	None,
 	Fire,
 	Water,
-	Earth
+	Earth,
+	Holy
 }

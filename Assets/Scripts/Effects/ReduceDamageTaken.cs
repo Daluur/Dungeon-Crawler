@@ -8,7 +8,7 @@ public class ReduceDamageTaken : Effect {
 	new int round = 2;
 
 	public ReduceDamageTaken(Skill skill) {
-		name = "Increase Damage Taken";
+		name = "Reduce Damage Taken";
 		effectFromSkill = skill.name;
 		selfTar = skill.selfTar;
 	}

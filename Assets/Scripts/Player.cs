@@ -19,19 +19,19 @@ public class Player : MonoBehaviour {
 	//Players current health.
 	public int health;
 	public int maxHealth;
-	int bonusHealth;
+	public int bonusHealth;
 
 	//Players current AP
 	public int AP;
-	int bonusAP;
+	public int bonusAP;
 
 	//Players current crit
 	public float critChance;
-	int critRating;
+	public int critRating;
 
 	// Player Damage reductions and increases
-	float damageReduction;
-	int armor;
+	public float damageReduction;
+	public int armor;
 
 	public float damageIncrease;
 	public float additionalReductions; 
@@ -64,8 +64,8 @@ public class Player : MonoBehaviour {
 			Debug.Log ("There are 2 players... somehow.. does it make sense?");
 		}
 
-		if (SaveLoad.SaveExist ()) {
-			loadPlayerData (SaveLoad.Load ());
+		if (SaveLoad.PlayerExist ()) {
+			loadPlayerData (SaveLoad.LoadPlayer ());
 		} else {
 			NewPlayer ();
 		}
@@ -81,7 +81,7 @@ public class Player : MonoBehaviour {
 	/// Saves PlayerData on exit
 	/// </summary>
 	void OnApplicationQuit() {
-		SaveLoad.Save (Player._instance.savePlayerData());
+		SaveLoad.SavePlayer (savePlayerData());
 	}
 
 	/// <summary>
@@ -91,7 +91,7 @@ public class Player : MonoBehaviour {
 		level = 1;
 		experience = 0;
 		XPforLevel = 250;
-		maxHealth = 3000;
+		maxHealth = 2000;
 		health = maxHealth;
 		bonusHealth = 0;
 		AP = 40;
@@ -103,6 +103,9 @@ public class Player : MonoBehaviour {
 		gold = 0;
 		rubies = 0;
 		VisualController._instance.CreatePlayerHealthbar (maxHealth);
+		HUD._instance.UpdateHUD();
+		StatShop._instance.ResetShop ();
+
 	}
 
 	/// <summary>
@@ -114,6 +117,7 @@ public class Player : MonoBehaviour {
 		if (XPforLevel < experience) {
 			DING ();
 		}
+		HUD._instance.UpdateHUD ();
 	}	
 
 	/// <summary>
@@ -122,6 +126,12 @@ public class Player : MonoBehaviour {
 	/// <param name="Enemylevel">Enemylevel.</param>
 	public void AddGold(int enemyLevel) {
 		gold += enemyLevel * 5;
+		HUD._instance.UpdateHUD ();
+	}
+
+	public void SubstractGold(int amount) {
+		gold -= amount;
+		HUD._instance.UpdateHUD ();
 	}
 
 	/// <summary>
@@ -130,6 +140,22 @@ public class Player : MonoBehaviour {
 	/// <param name="Enemylevel">Enemylevel.</param>
 	public void AddRubies(int dungeonLevel) {
 		rubies += dungeonLevel * 2;
+		HUD._instance.UpdateHUD ();
+	}
+
+	public void SubstractRubies(int amount) {
+		rubies -= amount;
+		HUD._instance.UpdateHUD ();
+	}
+
+	public void AddBonusHealth(int amount) {
+		maxHealth += amount;
+		bonusHealth += amount;
+	}
+
+	public void AddBonusAP(int amount) {
+		AP += amount;
+		bonusAP += amount;
 	}
 
 	/// <summary>
@@ -138,9 +164,9 @@ public class Player : MonoBehaviour {
 	/// <returns><c>true</c>, if dead, <c>false</c> otherwise.</returns>
 	/// <param name="dp">DamagePackage.</param>
 	public bool TakeDamage(DamagePackage dp){
-		dp.DamageIncrease (damageIncrease);
-		dp.DamageReduction (damageReduction);
-		dp.DamageReduction (additionalReductions);
+		dp.DamageIncrease (damageIncrease); // From Effects
+		dp.DamageReduction (additionalReductions); // From Effects 
+		dp.DamageReduction (damageReduction); // From Armor
 		health -= (int)Math.Floor(dp.damage);
 		Debug.Log ("Player took: " + dp.damage + " damage");
 		//Updates the healthbar
@@ -183,9 +209,7 @@ public class Player : MonoBehaviour {
 				myTurn = false;
 				Debug.Log ("Player used " + ability.name + "!");
 				ability.ActivateCD ();
-				foreach (Effect eff in ability.effects) {
-					eff.ActivateEffect (this, CC.currentEnemy, PCNPC.PC);
-				}
+
 				if (ability.selfTar) { // Healing
 					if (ability.selfDam) { //Damage
 						CombatController._instance.PlayerSelfDamage (ability.CalDmg (AP, critChance));
@@ -196,6 +220,9 @@ public class Player : MonoBehaviour {
 				else { // Damage
 					CombatController._instance.AttackEnemy (ability.CalDmg (AP, critChance));
 
+				}
+				foreach (Effect eff in ability.effects) {
+					eff.ActivateEffect (this, CC.currentEnemy, PCNPC.PC);
 				}
 			}
 			//Updates the visual CD effect.
@@ -222,7 +249,7 @@ public class Player : MonoBehaviour {
 		level++;
 		experience -= XPforLevel;
 		XPforLevel *= 2;
-		maxHealth += 300; //Whatever much health you get per level
+		maxHealth += 2000; //Whatever much health you get per level
 		health = maxHealth;
 		VisualController._instance.UpdatePlayerMaxHealth (maxHealth);
 		VisualController._instance.UpdatePlayerHealthbar (health);
@@ -269,24 +296,22 @@ public class Player : MonoBehaviour {
 		if (eff.stackable) {
 			effects.Add (eff);
 		} else {
-			bool nameMatch = false;
 			for (int i = 0; i < effects.Count; i++) {
 				if(eff.name == effects[i].name) {
-					nameMatch = true;
 					if (eff.effectFromSkill == effects [i].effectFromSkill) {
 						effects [i].ResetEffect (this, CC.currentEnemy, PCNPC.PC);
 						CombatText._instance.AddPlayerEffect (eff.name, true);
 						CombatText._instance.AddPlayerEffect (eff.name, false);
+						return;
 					} else {
 						effects.Add (eff);
 						CombatText._instance.AddPlayerEffect (eff.name, false);
+						return;
 					}
 				}
 			}
-			if (!nameMatch) {
-				effects.Add (eff);
-				CombatText._instance.AddPlayerEffect (eff.name, false);
-			}
+			effects.Add (eff);
+			CombatText._instance.AddPlayerEffect (eff.name, false);
 		}
 	}
 
@@ -340,7 +365,7 @@ public class Player : MonoBehaviour {
 		return abilties [i];
 	}
 
-	public PlayerData savePlayerData() {
+	PlayerData savePlayerData() {
 		PlayerData data = new PlayerData ();
 		data.level = level;
 		data.experience = experience;
@@ -355,7 +380,7 @@ public class Player : MonoBehaviour {
 		return data;
 	}
 
-	public void loadPlayerData(PlayerData data) {
+	void loadPlayerData(PlayerData data) {
 		level = data.level;
 		experience = data.experience;
 		XPforLevel = data.XPforLevel;
@@ -371,4 +396,19 @@ public class Player : MonoBehaviour {
 		gold = data.gold;
 		rubies = data.rubies;
 	}
+}
+
+[Serializable]
+public class PlayerData{
+	public int level;
+	public int experience;
+	public int XPforLevel;
+	public int bonusHealth;
+	public int bonusAP;
+	public int critRating;
+	public int armor;
+	public int gold;
+	public int rubies;
+	//public List<int> activeAbilities = new List<int>();
+	//public List<int> unlockedAbilities = new List<int>();
 }

@@ -18,8 +18,6 @@ public class Enemy {
 
 	public float critChance;
 
-
-
 	// Enemy Damage reductions and increases
 	float damageReduction;
 	int armor;
@@ -85,25 +83,31 @@ public class Enemy {
 		if (dp.type == ElementalType.Earth) {
 			if (type == ElementalType.Water) {
 				dp.DamageIncrease (20);
+				dp.isStrong = true;
 				return;
 			} else if (type == ElementalType.Fire) {
 				dp.DamageReduction (20);
+				dp.isStrong = false;
 				return;
 			}
 		} else if (dp.type == ElementalType.Fire) {
 			if(type == ElementalType.Earth) {
 				dp.DamageIncrease (20);
+				dp.isStrong = true;
 				return;
 			} else if (type == ElementalType.Water) {
 				dp.DamageReduction (20);
+				dp.isStrong = false;
 				return;
 			}
 		} else if (dp.type == ElementalType.Water) {
 			if(type == ElementalType.Fire) {
 				dp.DamageIncrease (20);
+				dp.isStrong = true;
 				return;
 			} else if (type == ElementalType.Earth) {
 				dp.DamageReduction (20);
+				dp.isStrong = false;
 				return;
 			}
 		}
@@ -209,24 +213,22 @@ public class Enemy {
 		if (eff.stackable) {
 			effects.Add (eff);
 		} else {
-			bool nameMatch = false;
 			for (int i = 0; i < effects.Count; i++) {
 				if(eff.name == effects[i].name) {
-					nameMatch = true;
 					if (eff.effectFromSkill == effects [i].effectFromSkill) {
 						effects [i].ResetEffect (Player._instance, this, PCNPC.NPC);
 						CombatText._instance.AddEnemyEffect (eff.name, true);
 						CombatText._instance.AddEnemyEffect (eff.name, false);
+						return;
 					} else {
 						effects.Add (eff);
 						CombatText._instance.AddEnemyEffect (eff.name, false);
+						return;
 					}
 				}
 			}
-			if (!nameMatch) {
-				effects.Add (eff);
-				CombatText._instance.AddEnemyEffect (eff.name, false);
-			}
+			effects.Add (eff);
+			CombatText._instance.AddEnemyEffect (eff.name, false);
 		}
 	}
 
