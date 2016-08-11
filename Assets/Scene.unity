@@ -4658,34 +4658,28 @@ MonoBehaviour:
   panelGroupRect: {fileID: 271049687}
   panelPrefab: {fileID: 178444, guid: 92d1c89f8bb61ee4db7eaeb8e37c7bcf, type: 2}
   SPIs:
-  - description: Get more HP
-    cost: 5
+  - description: Buy 100 Additional Health Points
+    cost: 0
     currencyType: 0
     ID: 0
     increasePerBuy: 5
     boughtCount: 0
-  - description: Get more AP
-    cost: 5
+  - description: Buy 5 Additonal Attack Power
+    cost: 0
     currencyType: 0
     ID: 1
     increasePerBuy: 5
     boughtCount: 0
-  - description: Get more W/E
+  - description: Buy 100 Gold
     cost: 0
-    currencyType: 0
+    currencyType: 1
     ID: 2
-    increasePerBuy: 5
-    boughtCount: 0
-  - description: Get more gold!
-    cost: 0
-    currencyType: 0
-    ID: 3
     increasePerBuy: 100
     boughtCount: 0
-  - description: Get more ?
-    cost: 100
-    currencyType: 0
-    ID: 4
+  - description: Buy more ??
+    cost: 10000
+    currencyType: 1
+    ID: 3
     increasePerBuy: 100
     boughtCount: 0
 --- !u!4 &2013581514
